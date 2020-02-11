@@ -1,0 +1,71 @@
+body {
+	background-color: #eaeaea;
+	font-size: 14px;;
+}
+
+.top-header {
+	background-color: #3498db;
+	position: fixed;
+	width: 100%;
+	z-index: 2;
+}
+
+.top-flex {
+	display: flex;
+}
+
+.top-account {
+	height: auto;
+}
+
+.top-account a {
+	padding: 10px;
+	display: inline-block;
+	background-color: #2980b9;
+} 
+
+.top-brand {
+	flex-grow: 1;
+	padding: 10px;
+}
+
+.top-brand a, .top-account a {
+	color: #FFF;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.top-brand a span, .top-account a span {
+	display: inline-block;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.content {
+    width: 100%;
+    min-height: 100vh;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    position: fixed;
+    z-index: 1;
+}
+
+.participant-picture {
+    overflow: hidden;
+}
+
+.participant-picture img {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.nav-toggle {
+	display: none !important;
+}

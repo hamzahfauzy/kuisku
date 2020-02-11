@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+
+html, body, #app {
+	font-family: 'Montserrat', sans-serif;
+	width: 100%;
+	height: 100%;
+	font-size: 14px;
+	background-color: #eaeae0;
+}
+
+.left-sidebar-section {
+	width: 280px;
+	z-index: 2;
+	/* display: inline-block; */
+	float: left;
+	/*background-color: #FFF;*/
+	overflow: hidden;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	position: fixed;
+	transition: width 0.5s ease 0s;
+}
+
+li.menu-divider {
+	padding: 15px;
+	padding-top: 10px;
+	padding-bottom: 0px;
+	font-weight: bold;
+}
+
+.toggle-sidebar {
+	width: 280px !important;
+}
+
+.sidebar-container {
+	padding-top: 80px;
+	width: 280px;
+}
+
+.sidebar-container ul, ul.nav-menu {
+	list-style-type: none;
+	padding:0px;
+}
+
+ul.nav-menu li {
+	display: inline-block;
+}
+
+ul.nav-menu li a {
+	padding:10px;
+	display: inline-block;
+}
+
+.sidebar-container li a {
+	padding: 10px;
+	padding-left: 15px;
+	margin-left: 10px;
+	display: block;
+	text-decoration: none;
+	color: #f6922d;
+	font-size: 14px;
+	letter-spacing: 1px;
+}
+
+/*.sidebar-container li a i.fa {
+	color: #333;
+}*/
+
+.sidebar-container li a:hover {
+	font-weight: bold;
+	color: #130912 !important;
+}
+.sidebar-active {
+	font-weight: bold;
+	background-color: #999;
+	border-radius: 5px;
+	color: #FFF !important;
+}
+
+img.left-profile-picture {
+	width: 150px;
+	height: 150px;
+	object-fit: cover;
+	/*border-radius: 50%;
+	overflow: hidden;*/
+}
+
+small.left-school-name {
+	color: blue;
+}
+
+.z-techno-btn {
+	color: #FFF;
+	border:none;
+}
+
+.z-techno-primary {
+	background-color: #130912 !important;
+}
+
+.z-techno-primary:hover {
+	color:#f6922d;
+}
+
+.z-techno-secondary {
+	background-color: #f6922d !important;
+}
+
+.z-techno-secondary:hover {
+	color: #130912 !important;
+}
+
+.z-techno-el, .z-techno-btn {
+	border-radius: 0;
+}
+
+.z-techno-form .form-group label {
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.z-techno-content {
+	font-size: 13px !important;
+}
+
+.z-login-form .form-control, .z-techno-login-btn {
+	border-radius: 20px;
+	padding: 15px;
+	display: inline-block;
+	font-size: 18px;
+}
+
+.z-techno-login-btn {
+	padding: 5px;
+}
+
+.z-techno-navbar {
+	background-color: #130912 !important;
+	z-index: 3;
+	width: 100%;
+	position: fixed;
+}
+
+.z-techno-navbar button.navbar-toggler {
+	border:0px;
+}
+
+.z-techno-navbar i.fa.fa-bars {
+	color: #FFF;
+}
+
+.z-techno-navbar a.navbar-brand, .z-techno-navbar .navbar-nav a.nav-link {
+    color: #FFF !important;
+}
+
+main {
+	/*display: inline-block;*/
+	width: 100%;
+	
+}
+
+.content-container {
+	padding-top: 15px;
+	margin-left: 280px;
+	transition: margin-left 0.5s ease 0s;
+}
+
+.content-wrapper {
+	padding: 20px;
+	background: #FFF;
+}
+
+.wrapper {
+	background-color: #FFF;
+	padding: 10px;
+	box-shadow: #130912;
+}
+
+.wrapper .site-title {
+	padding: 15px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+ul.nav-menu {
+	background-color: #f6922d;
+}
+
+ul.nav-menu li a {
+	color:#FFF;
+}
+
+ul.nav-menu li a:hover {
+	color:#130912;
+	text-decoration: none;
+}
+
+footer {
+	padding-top: 15px;
+}
+
+@media only screen and (max-width: 786px) {
+	.left-sidebar-section {
+		width: 0px;
+		background-color: #eaeae0;
+	}
+
+	.content-container {
+		margin-left: 0px;
+	}
+}
+
+@media screen and ( max-height: 590px )
+{
+	.left-sidebar-section {
+		overflow-y: scroll;
+	}
+}

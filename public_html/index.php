@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set("Asia/Jakarta");
 spl_autoload_register(function($classname){
     $class_map = require '../config/class_map.php';
     if(isset($class_map[$classname]))

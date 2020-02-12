@@ -22,7 +22,7 @@ $this->js = [
                 <div class="table-panel">
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus fa-fw"></i> Tambah Sesi</button>
-                        <button class="btn btn-success" data-toggle="modal" data-target="#modalSoal"><i class="fa fa-file-code-o fa-fw"></i> Soal</button>
+                        <button class="btn btn-success" onclick="fetchSoal()" data-toggle="modal" data-target="#modalSoal"><i class="fa fa-file-code-o fa-fw"></i> Soal</button>
                     </div>
                     <div class="panel-content not-grow">
                         <div class="form-inline">
@@ -183,7 +183,7 @@ $this->js = [
                 <table class="table table-bordered table-striped table-soal">
                     <tbody>
                         <tr>
-                            <td colspan="3"><i>Tidak ada data!</i></td>
+                            <td><i>Tidak ada data!</i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -194,7 +194,7 @@ $this->js = [
                 <table class="table table-bordered table-striped table-koleksi-soal">
                     <tbody>
                         <tr>
-                            <td colspan="3"><i>Tidak ada data!</i></td>
+                            <td><i>Tidak ada data!</i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -219,6 +219,49 @@ async function loadData()
     let response = await request.json()
     dataKuis = response
     fetchToTable()
+}
+
+async function fetchSoal()
+{
+    let request = await fetch('<?= route('admin/kuis/soal/get/'.$kuis->id) ?>')
+    let response = await request.json()
+
+    $('.table-soal > tbody').html('')
+    $('.table-koleksi-soal > tbody').html('')
+    
+    if(response.kuis.soal.length == 0)
+        $('.table-soal > tbody').html('<tr><td><i>Tidak ada data!</i></td></tr>')
+
+    if(response.allSoal.length == 0)
+        $('.table-koleksi-soal > tbody').html('<tr><td><i>Tidak ada data!</i></td></tr>')
+
+    response.allSoal.forEach(val => {
+        var categories = val.categories.map(e => e.category.category_name ).join(', ')
+        $('.table-koleksi-soal > tbody').append(`<tr>
+            <td>
+                <b>${val.post_title}</b><br>
+                ${val.post_excerpt}<br>
+                <div class="post-tag">
+                    <i class="fa fa-tag"></i> ${categories}
+                </div>
+                <a href="javascript:void(0)" onclick="tambahkanSoal(<?=$kuis->id?>,${val.id})" class="act-btn jawab-btn"><i class="fa fa-arrow-right"></i> Tambah Soal</a>
+            </td>
+        </tr>`)
+    })
+
+    response.kuis.soal.forEach(val => {
+        var categories = val.soal.categories.map(e => e.category.category_name ).join(', ')
+        $('.table-soal > tbody').append(`<tr>
+            <td>
+                <b>${val.soal.post_title}</b><br>
+                ${val.soal.post_excerpt}<br>
+                <div class="post-tag">
+                    <i class="fa fa-tag"></i> ${categories}
+                </div>
+                <a href="javascript:void(0)" onclick="hapusSoal(<?=$kuis->id?>,${val.post_question_id})" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
+            </td>
+        </tr>`)
+    })
 }
 
 async function simpanKuis()
@@ -503,6 +546,34 @@ async function batalkanPeserta(sesi_id, user_id)
     })
     let response = await request.json()
     fetchPeserta(sesi_id)
+}
+
+async function tambahkanSoal(kuis_id, soal_id)
+{
+    let request = await fetch('<?= route('admin/kuis/soal/tambah-soal') ?>',{
+        method :'POST',
+        headers : {
+            'Content-Type':'application/json'
+        },
+        body   : JSON.stringify({kuis_id:kuis_id,soal_id:soal_id}),
+    })
+
+    let response = await request.json()
+    fetchSoal()
+}
+
+async function hapusSoal(kuis_id, soal_id)
+{
+    let request = await fetch('<?= route('admin/kuis/soal/hapus-soal') ?>',{
+        method :'POST',
+        headers : {
+            'Content-Type':'application/json'
+        },
+        body   : JSON.stringify({kuis_id:kuis_id,soal_id:soal_id}),
+    })
+
+    let response = await request.json()
+    fetchSoal()
 }
 
 function filterKuis(keyword)

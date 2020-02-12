@@ -1,4 +1,4 @@
-<div style="padding-top: 50px;">
+<div style="padding-top: 50px;position:fixed;">
 	<div class="nav-account">
         <div class="participant-picture">
             <img src="<?= asset('assets/user.png') ?>" width="75px" height="75px" style="margin-right: 10px;" class="nav-account-img">

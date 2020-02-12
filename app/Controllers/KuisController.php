@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-use App\Models\{Kuis,Sesi,Participant,SesiUser};
+use App\Models\{Kuis,Sesi,Soal,Participant,SesiUser,ExamQuestion};
 use PostMeta;
 
 class KuisController
@@ -33,6 +33,22 @@ class KuisController
             $sesi->waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai'));
         }
         return $kuis->sesi;
+    }
+
+    function getSoal($id)
+    {
+        $kuis = $this->find($id);
+        $soal = [];
+        foreach($kuis->soal() as $val)
+        {
+            $val->soal->categories();
+            $soal[] = $val->post_question_id;
+        }
+        
+        $all_soal = Soal::whereNotIn('id',$soal)->get();
+        foreach($all_soal as $question)
+            $question->categories();
+        return ['kuis'=>$kuis,'allSoal'=>$all_soal];
     }
 
     function view($id)
@@ -75,6 +91,28 @@ class KuisController
         $sesiUser = SesiUser::where('post_id',$request->sesi_id)->where('user_id',$request->user_id)->first();
 
         SesiUser::delete($sesiUser->id);
+
+        return ['status' => 1];
+    }
+
+    function tambahSoal()
+    {
+        $request = request()->post();
+        $exam = new ExamQuestion;
+        $exam->save([
+            'post_exam_id' => $request->kuis_id,
+            'post_question_id' => $request->soal_id,
+        ]);
+
+        return ['status' => 1];
+    }
+
+    function hapusSoal()
+    {
+        $request = request()->post();
+        $exam = ExamQuestion::where('post_exam_id',$request->kuis_id)->where('post_question_id',$request->soal_id)->first();
+
+        ExamQuestion::delete($exam->id);
 
         return ['status' => 1];
     }

@@ -461,4 +461,13 @@ class Model
 		$data = $QueryBuilder->run(1);
 		return $data->Column_name;
 	}
+
+	public static function runRaw($sql)
+	{
+		self::init();
+		$QueryBuilder = new QueryBuilder;
+		$QueryBuilder->is_select = 1;
+		$QueryBuilder->sql = $sql;
+		return $QueryBuilder->run();
+	}
 }

@@ -23,6 +23,6 @@ class Sesi extends Post
 
     function kuis()
     {
-        return $this->hasMany(Kuis::class,['id'=>'post_parent_id']);
+        return $this->hasOne(Kuis::class,['id'=>'post_parent_id']);
     }
 }

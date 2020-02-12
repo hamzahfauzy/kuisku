@@ -164,6 +164,12 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/kuis/soal/get/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@getSoal',
+        'return'   => 'json'
+    ],
+
     'admin/kuis/insert' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@insert',
@@ -221,6 +227,18 @@ return [
     'admin/kuis/sesi/batal-peserta' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@sesiBatalPeserta',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/soal/tambah-soal' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@tambahSoal',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/soal/hapus-soal' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@hapusSoal',
         'return'   => 'json'
     ],
 

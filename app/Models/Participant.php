@@ -10,14 +10,5 @@ class Participant extends User
     function sesi()
     {
         return $this->hasMany(SesiUser::class,['user_id'=>'id']);
-
-        $return = [];
-        foreach($sesi_users as $pivot)
-        {
-            $pivot->sesi();
-            $return[] = $pivot;
-        }
-
-        return $return;
     }
 }

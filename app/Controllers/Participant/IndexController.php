@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers\Participant;
-use App\Models\Participant;
+use App\Models\{Participant,ParticipantSession,Soal};
 use Post;
 
 class IndexController 
@@ -40,7 +40,35 @@ class IndexController
     function exam()
     {
         $sesi = session()->get('currentSession');
-        // $sesi->
-        return ['sesi' => session()->get('currentSession')];
+        $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
+        if(empty($partSesi))
+        {
+            $sesi->sesi->kuis()->soal();
+            $questions = [];
+            foreach($sesi->sesi->kuis->soal as $soal)
+            $questions[] = $soal->post_question_id;
+            $questions = implode(',',$questions);
+            
+            $soal = Soal::runRaw("SELECT id FROM posts WHERE id IN ($questions) ORDER BY RAND()");
+            $questions = [];
+            foreach($soal as $val)
+                $questions[] = $val['id'];
+
+            $questions = implode(',',$questions);
+
+            $partSession = new ParticipantSession;
+            $id = $partSession->save([
+                'post_exam_id' => $sesi->post_id,
+                'user_id' => session()->get('id'),
+                'questions_order' => $questions,
+                'status' => 1,
+            ]);
+
+            $partSesi = ParticipantSession::find($id);
+        }
+        $questions = explode(',',$partSesi->questions_order);
+        $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();
+        
+        return ['sesi' => $sesi, 'soal' => $soal];
     }
 }

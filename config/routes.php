@@ -260,12 +260,6 @@ return [
         'return'     => 'partial:participant.index'
     ],
 
-    'participant/exam' => [
-        'middleware' => 'Participant',
-        'callback'   => 'Participant\IndexController@exam',
-        'return'     => 'view:participant.exam'
-    ],
-
     'participant/exam/answer' => [
         'middleware' => 'Participant',
         'callback'   => 'Participant\IndexController@answer',
@@ -276,6 +270,18 @@ return [
         'middleware' => 'Participant',
         'callback'   => 'Participant\IndexController@finish',
         'return'     => 'redirect:url'
+    ],
+
+    'participant/exam' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@exam',
+        'return'     => 'view:participant.exam'
+    ],
+
+    'participant/exam/{no}' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@exam',
+        'return'     => 'view:participant.exam'
     ],
 
     'login' => [

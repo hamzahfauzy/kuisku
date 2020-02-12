@@ -52,7 +52,7 @@ $this->js = [
                 </div>
                 <div class="finish-section container">
                     <?php if($no != 1): ?>
-                    <a href="<?= route('participant/exam') ?>?question=<?=$no-1?>" class="btn btn-success"><i class="fa fa-arrow-left fa-fw"></i> Sebelumnya</a>
+                    <a href="<?= route('participant/exam/'.($no-1)) ?>" class="btn btn-success"><i class="fa fa-arrow-left fa-fw"></i> Sebelumnya</a>
                     <?php endif ?>
 
                     <?php if($no == $numOf): ?>
@@ -60,7 +60,7 @@ $this->js = [
                     <?php endif ?>
                     
                     <?php if($no != $numOf): ?>
-                    <a href="<?= route('participant/exam') ?>?question=<?=$no+1?>" class="btn btn-success"><i class="fa fa-arrow-right fa-fw"></i> Selanjutnya</a>
+                    <a href="<?= route('participant/exam/'.($no+1)) ?>" class="btn btn-success"><i class="fa fa-arrow-right fa-fw"></i> Selanjutnya</a>
                     <?php endif ?>
                 </div>
             </form>

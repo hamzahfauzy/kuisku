@@ -37,9 +37,8 @@ class IndexController
         ];
     }
 
-    function exam()
+    function exam($no = 1)
     {
-        $no = isset($_GET['question']) ? $_GET['question'] : 1;
         $index = $no-1;
         $sesi = session()->get('currentSession');
         $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?= $this->application_name ?> | Peserta</title>
@@ -25,7 +25,7 @@
 			    <span class="email-info"><?= session()->user()->user_email ?> <br></span>
                 <span class="ip-info">IP: <?= getUserIpAddr() ?></span>
                 <br><br>
-                <?php if($currentSession && $currentSession->partSesi()->status == 1): ?>
+                <?php if($currentSession || ($currentSession && $currentSession->partSesi()->status == 1)): ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
                 <?php elseif($currentSession && $currentSession->partSesi()->status == 2): ?>
                     <div class="alert alert-success">Anda sudah menyelesaikan Ujian</div>

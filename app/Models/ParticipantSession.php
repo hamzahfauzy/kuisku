@@ -11,8 +11,8 @@ class ParticipantSession extends Model
         return $this->hasOne(User::class,['id'=>'user_id']);
     }
 
-    function kuis()
+    function sesi()
     {
-        return $this->hasOne(Kuis::class,['id'=>'post_exam_id']);
+        return $this->hasOne(Sesi::class,['id'=>'post_exam_id']);
     }
 }

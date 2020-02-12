@@ -15,4 +15,9 @@ class SesiUser extends Model
     {
         return $this->hasOne(Sesi::class,['id'=>'post_id']);
     }
+
+    function partSesi()
+    {
+        return $this->hasOne(ParticipantSession::class,['post_exam_id'=>'post_id','user_id'=>'user_id']);
+    }
 }

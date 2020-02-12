@@ -266,6 +266,18 @@ return [
         'return'     => 'view:participant.exam'
     ],
 
+    'participant/exam/answer' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@answer',
+        'return'     => 'json'
+    ],
+
+    'participant/exam/finish' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@finish',
+        'return'     => 'redirect:url'
+    ],
+
     'login' => [
         'middleware' => 'Login',
         'callback' => 'AuthController@login',

@@ -25,8 +25,10 @@
 			    <span class="email-info"><?= session()->user()->user_email ?> <br></span>
                 <span class="ip-info">IP: <?= getUserIpAddr() ?></span>
                 <br><br>
-                <?php if($currentSession): ?>
+                <?php if($currentSession && $currentSession->partSesi()->status == 1): ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
+                <?php elseif($currentSession && $currentSession->partSesi()->status == 2): ?>
+                    <div class="alert alert-success">Anda sudah menyelesaikan Ujian</div>
                 <?php elseif($nextSession): ?>
                     <a href="#" class="btn btn-success">Ujian akan di laksanakan pada <?= $nextSession->sesi->waktu_mulai ?></a> <br><br>
                 <?php else: ?>

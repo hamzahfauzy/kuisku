@@ -24,6 +24,16 @@ $this->js = [
                 <div class="exam-question">
                     <div class="container">
                         <h3><?= $s->post_title ?></h3>
+                        <a href="#"><i class="fa fa-tag"></i>
+                        <?php 
+                        foreach($s->categories() as $category):
+                            echo $category->category->category_name;
+                            if($category != end($s->categories))
+                                echo ",";
+                        endforeach; 
+                        ?>
+                        </a>
+                        <hr>
                         <?= $s->post_content ?>
                         <br>
                         <hr>
@@ -33,7 +43,7 @@ $this->js = [
                     <div class="exam-options row">
                         <?php foreach($s->answers() as $answer): ?>
                         <div class="inputGroup col-sm-12 col-md-6">
-                            <input id="radio<?=$answer->id?>" name="answers[<?=$s->id?>]" type="radio" value="<?= $answer->id ?>"/>
+                            <input onchange="sendAnswer(<?=$answer->id?>,<?=$s->id?>)" id="radio<?=$answer->id?>" name="answers[<?=$s->id?>]" type="radio" value="<?= $answer->id ?>" <?= $answer->id == $answered->post_answer_id ? 'checked=""' : '' ?>/>
                             <label for="radio<?=$answer->id?>"><?= $answer->post_content ?></label>
                         </div>
                         <?php endforeach ?>
@@ -46,7 +56,7 @@ $this->js = [
                     <?php endif ?>
 
                     <?php if($no == $numOf): ?>
-                    <a href="<?= route('participant/finish-exam') ?>" class="btn btn-primary"><i class="fa fa-check"></i> Selesai</a>
+                    <a href="javascript:void(0)" onclick="finishExam()" class="btn btn-primary"><i class="fa fa-check"></i> Selesai</a>
                     <?php endif ?>
                     
                     <?php if($no != $numOf): ?>
@@ -58,3 +68,36 @@ $this->js = [
         </div>
     </div>
 </div>
+
+<script>
+async function sendAnswer(jawaban, soal)
+{
+    let request = await fetch('<?= route('participant/exam/answer') ?>',{
+        method:'POST',
+        headers : {
+            'Content-Type':'application/json'
+        },
+        body   : JSON.stringify({answer_id:jawaban, question_id:soal}),
+    })
+
+    let response = await request.json()
+    console.log(response)
+}
+
+function finishExam()
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan menyelesaikan ujian ini ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            location='<?= route('participant/exam/finish') ?>'
+        }
+    })
+}
+</script>

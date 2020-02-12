@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers\Participant;
-use App\Models\{Participant,ParticipantSession,Soal};
+use App\Models\{Participant,ParticipantSession,Soal,ExamQuestion,ExamAnswer,Jawaban};
 use Post;
 
 class IndexController 
@@ -43,6 +43,8 @@ class IndexController
         $index = $no-1;
         $sesi = session()->get('currentSession');
         $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
+        if($partSesi->status == 2)
+            return redirect(route('participant'));
         if(empty($partSesi))
         {
             $sesi->sesi->kuis()->soal();
@@ -72,7 +74,44 @@ class IndexController
         $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();
 
         $numOf = count($soal);
+
+        $s = $soal[$index];
+        $examQuestion = ExamQuestion::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('post_question_id',$s->id)->first();
+        $answer = ExamAnswer::where('exam_question_id',$examQuestion->id)->where('user_id',session()->get('id'))->first();
         
-        return ['sesi' => $sesi, 's' => $soal[$index], 'no' => $no, 'numOf' => $numOf];
+        return ['sesi' => $sesi, 's' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer];
+    }
+
+    function answer()
+    {
+        $request = request()->post();
+        $sesi = session()->get('currentSession');
+        $exam = $sesi->sesi->kuis();
+        $examQuestion = ExamQuestion::where('post_exam_id',$exam->id)->where('post_question_id',$request->question_id)->first();
+        $jawaban = Jawaban::find($request->answer_id);
+
+        $examAnswer = ExamAnswer::where('exam_question_id',$examQuestion->id)->where('user_id',session()->get('id'))->first();
+        if(!$examAnswer)
+            $examAnswer = new ExamAnswer;
+
+        $examAnswer->save([
+            'exam_question_id' => $examQuestion->id,
+            'post_answer_id'   => $request->answer_id,
+            'user_id'          => session()->get('id'),
+            'status'           => $jawaban->post_as == 'Jawaban Benar' ? 1 : 0
+        ]);
+
+        return ['status' => 'success'];
+    }
+
+    function finish()
+    {
+        $sesi = session()->get('currentSession');
+        $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
+        $partSesi->save([
+            'status' => 2
+        ]);
+
+        return route('participant');
     }
 }

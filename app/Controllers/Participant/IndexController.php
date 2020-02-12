@@ -39,6 +39,8 @@ class IndexController
 
     function exam()
     {
+        $no = isset($_GET['question']) ? $_GET['question'] : 1;
+        $index = $no-1;
         $sesi = session()->get('currentSession');
         $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
         if(empty($partSesi))
@@ -68,7 +70,9 @@ class IndexController
         }
         $questions = explode(',',$partSesi->questions_order);
         $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();
+
+        $numOf = count($soal);
         
-        return ['sesi' => $sesi, 'soal' => $soal];
+        return ['sesi' => $sesi, 's' => $soal[$index], 'no' => $no, 'numOf' => $numOf];
     }
 }

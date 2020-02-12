@@ -29,6 +29,7 @@ class KuisController
         $kuis = $this->find($id);
         foreach($kuis->sesi() as $sesi)
         {
+            $sesi->now = date('Y-m-d H:i:s');
             $sesi->waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai'));
             $sesi->waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai'));
         }
@@ -63,6 +64,7 @@ class KuisController
         $sesi->waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai'));
         $sesi->waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai'));
         $sesi->peserta();
+        $sesi->now = date('Y-m-d H:i:s');
         $all_sesi = Kuis::where('id',$sesi->post_parent_id)->first();
         $peserta = [];
         foreach($all_sesi->sesi() as $_sesi){

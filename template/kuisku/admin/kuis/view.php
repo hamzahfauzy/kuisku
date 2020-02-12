@@ -335,9 +335,7 @@ async function fetchPeserta(id)
 
     var waktu_mulai   = new Date(response.sesi.waktu_mulai)
     var waktu_selesai = new Date(response.sesi.waktu_selesai)
-    var now           = Date.now()
-
-    console.log(now, waktu_mulai)
+    var now           = new Date(response.now)
     if(now < waktu_mulai)
     {
         response.sesi.peserta.forEach(val => {
@@ -446,7 +444,7 @@ function fetchToTable(data = false)
 
         var waktu_mulai   = new Date(val.waktu_mulai)
         var waktu_selesai = new Date(val.waktu_selesai)
-        var now           = Date.now()
+        var now           = new Date(val.now)
 
         if(now < waktu_mulai)
         $('.table-kuis > tbody').append(`<tr>

@@ -2,13 +2,26 @@
 namespace App\Controllers;
 use User;
 use Page;
+use Category;
+use App\Models\{Soal,Kuis,Participant};
 
 class HomeController
 {
 
     function index()
     {
-        return ['name' => 'Adam', 'address' => 'Washington DC'];
+        $soal = Soal::count();
+        $kuis = Kuis::count();
+        $peserta = Participant::count();
+        $kategori = Category::count();
+        $total = $soal+$kuis+$peserta+$kategori;
+        return [
+            'soal' => $soal, 
+            'kuis' => $kuis,
+            'peserta' => $peserta,
+            'kategori' => $kategori,
+            'total' => $total
+        ];
     }
 
     function profile()

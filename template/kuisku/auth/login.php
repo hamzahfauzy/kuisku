@@ -16,10 +16,13 @@
           	<img src="<?= base_url() ?>/assets/logo.png" width="150px">
           	</center>
             <h5 class="card-title text-center"><?= app()['application_name'] ?> LOGIN</h5>
+            <?php $old_email=""; if(session()->get('error')): $old_email = session()->get('old_email');?>
+            <div class="alert alert-danger"><?=session()->get('error')?></div>
+            <?php session()->destroy(); endif ?>
             <form class="form-signin" method="post" action="<?= base_url() ?>/do-login">
               <input type="hidden" name="act" value="login">
               <div class="form-label-group">
-                <input type="email" name="user_login" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                <input type="email" name="user_login" value="<?= $old_email; ?>" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
                 <label for="inputEmail">Email</label>
               </div>
 

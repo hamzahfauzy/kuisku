@@ -212,6 +212,18 @@ return [
         'return'   => 'view:admin.kuis.view'
     ],
 
+    'admin/kuis/participant/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@participant',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/view/{id}/scoreboard' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@scoreboard',
+        'return'   => 'view:admin.kuis.scoreboard'
+    ],
+
     'admin/kuis/sesi/view/{id}' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@viewSesi',

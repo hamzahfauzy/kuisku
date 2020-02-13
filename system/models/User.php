@@ -2,6 +2,8 @@
 
 class User extends Model
 {
+
+    protected $user_pass;
     
     function meta($param = false)
     {

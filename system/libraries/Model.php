@@ -48,6 +48,96 @@ class Model
 		self::$_fields = isset(static::$fields) ? static::$fields : "";
 	}
 
+	public static function count()
+	{
+		self::init();
+		self::$QueryBuilder->select(self::$_tbl);
+
+		$className = get_called_class();
+
+		$model = new ReflectionClass($className);
+		$modelProperties = $model->getProperties();
+		$modelStaticProperties = $model->getStaticProperties();
+		$modelProperties = array_filter($modelProperties, function($arr) use ($className, $modelStaticProperties) {
+			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]))
+				return TRUE;
+			else
+				return FALSE;
+		});
+
+		foreach($modelProperties as $key => $value)
+		{
+			// $_class = new $value->class;
+			$_className = explode('\\', $value->class);
+			$_className = array_pop($_className);
+			$prop = preg_replace('/(?<!\ )[A-Z]/', '_$0', $_className);
+			$prop = trim($prop,"_");
+			self::$where_queue[] = [
+				"type" => "AND",
+				"key" => $value->name,
+				"value" => strtolower($prop)
+			];
+			// self::where($value->name,$model->getProperty($value->name)->getValue());
+		}
+
+		if(count(self::$where_queue))
+		{
+			foreach (self::$where_queue as $key => $value) {
+				if($value['type'] == "AND")
+				{
+					if(is_array($value['value']))
+				    {
+				        self::$QueryBuilder->where($value['key'],$value['value'][0],$value['value'][1]);
+				    }
+				    else
+				    {
+				        self::$QueryBuilder->where($value['key'],$value['value']);
+				    }
+				}
+
+				if($value['type'] == "OR")
+				{
+					if(is_array($value['value']))
+				    {
+				        self::$QueryBuilder->orwhere($value['key'],$value['value'][0],$value['value'][1]);
+				    }
+				    else
+				    {
+				        self::$QueryBuilder->orwhere($value['key'],$value['value']);
+				    }
+				}
+
+				if($value['type'] == 'IN')
+				{
+					self::$QueryBuilder->whereIn($value['key'],$value['value']);
+				}
+
+				if($value['type'] == 'NOT IN')
+				{
+					self::$QueryBuilder->whereNotIn($value['key'],$value['value']);
+				}
+
+				if($value['type'] == 'ORIN')
+				{
+					self::$QueryBuilder->OrWhereIn($value['key'],$value['value']);
+				}
+			}
+		}
+		if(self::$_orderby != "")
+		{
+		    self::$QueryBuilder->orderby(self::$_orderby);
+		}
+		
+		if(self::$_limit != "")
+		{
+		    self::$QueryBuilder->setlimit(self::$_limit);
+		}
+		self::$where_queue = [];
+		self::$_orderby = "";
+		self::$_limit = "";
+		return count(self::$QueryBuilder->run());
+	}
+
 	public static function get()
 	{
 		self::init();
@@ -161,7 +251,7 @@ class Model
 		$modelProperties = $model->getProperties();
 		$modelStaticProperties = $model->getStaticProperties();
 		$modelProperties = array_filter($modelProperties, function($arr) use ($className, $modelStaticProperties) {
-			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]))
+			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]) && !$arr->isProtected())
 				return TRUE;
 			else
 				return FALSE;

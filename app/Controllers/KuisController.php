@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-use App\Models\{Kuis,Sesi,Soal,Participant,SesiUser,ExamQuestion};
+use App\Models\{Kuis,Sesi,Soal,Participant,ParticipantSession,SesiUser,ExamQuestion,ExamAnswer};
 use PostMeta;
 
 class KuisController
@@ -53,6 +53,39 @@ class KuisController
     }
 
     function view($id)
+    {
+        $kuis = Kuis::where('id',$id)->first();
+        return ['kuis'=>$kuis];
+    }
+
+    function participant($id)
+    {
+        $kuis = Kuis::find($id);
+        $participant = [];
+        foreach($kuis->sesi() as $sesi)
+        {
+            foreach($sesi->partSession() as $partSesi)
+            {
+                $skor = 0;
+                foreach($kuis->soal() as $soal)
+                {
+                    $jawaban = ExamAnswer::where('exam_question_id',$soal->id)->where('user_id',$partSesi->user_id)->first();
+                    if($jawaban)
+                        $skor += $jawaban->status;
+                }
+                $partSesi->skor = $skor;
+                $partSesi->sesi();
+                $partSesi->sesi->waktu_mulai = str_replace('T',' ',$partSesi->sesi->meta('waktu_mulai')).":00";
+                $partSesi->sesi->waktu_selesai = str_replace('T',' ',$partSesi->sesi->meta('waktu_selesai')).":00";
+                $partSesi->sesi->now = date('Y-m-d H:i:s');
+                $participant[] = $partSesi;
+            }
+        }
+
+        return $participant;
+    }
+
+    function scoreboard($id)
     {
         $kuis = Kuis::where('id',$id)->first();
         return ['kuis'=>$kuis];

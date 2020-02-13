@@ -22,7 +22,11 @@ class AuthController
         $password = md5($request->user_pass);
         $user = User::where('user_login',$request->user_login)->where('user_pass',$password)->first();
         if(empty($user) || $user == null)
+        {
+            session()->set('error','Username atau Password salah');
+            session()->set('old_email',$request->user_login);
             return history()->back();
+        }
 
         session()->set('id',$user->id);
         return route('/');

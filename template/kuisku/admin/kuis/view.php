@@ -23,6 +23,7 @@ $this->js = [
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus fa-fw"></i> Tambah Sesi</button>
                         <button class="btn btn-success" onclick="fetchSoal()" data-toggle="modal" data-target="#modalSoal"><i class="fa fa-file-code-o fa-fw"></i> Soal</button>
+                        <a href="<?= route('admin/kuis/view/'.$kuis->id.'/scoreboard') ?>" class="btn btn-warning"><i class="fa fa-file-text fa-fw"></i> Scoreboard</a>
                     </div>
                     <div class="panel-content not-grow">
                         <div class="form-inline">

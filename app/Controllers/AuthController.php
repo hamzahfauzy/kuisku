@@ -25,7 +25,7 @@ class AuthController
         {
             session()->set('error','Username atau Password salah');
             session()->set('old_email',$request->user_login);
-            return history()->back();
+            return route('login');
         }
 
         session()->set('id',$user->id);

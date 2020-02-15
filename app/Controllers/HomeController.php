@@ -45,6 +45,26 @@ class HomeController
         }
     }
 
+    function setting()
+    {
+        return ['user'=>session()->user()];
+    }
+
+    function update()
+    {
+        $request = request()->post();
+        $user = session()->user();
+        $password = !empty($request->password) ? md5($request->password) : $user->getPassword();
+        $user->save([
+            'user_name'   => $request->nama,
+            'user_email'  => $request->email,
+            'user_login'  => $request->email,
+            'user_pass'   => $password,
+        ]);
+
+        return route('admin/setting');
+    }
+
     function profile()
     {
         if(isset(request()->get()->name))

@@ -176,6 +176,18 @@ return [
         'return'   => 'page:soal'
     ],
 
+    'admin/setting' => [
+        'middleware' => 'Admin',
+        'callback' => 'HomeController@setting',
+        'return'   => 'page:pengaturan'
+    ],
+
+    'admin/setting/update' => [
+        'middleware' => 'Admin',
+        'callback' => 'HomeController@update',
+        'return'   => 'redirect:url'
+    ],
+
     'admin/question/get' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@index',

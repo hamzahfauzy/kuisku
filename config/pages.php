@@ -34,7 +34,8 @@ return [
 
     'pengaturan' => [
         'label' => '<i class="fa fa-cog fa-fw"></i> Pengaturan',
-        'url'   => '',
+        'url'   => route('admin/setting'),
+        'file'  => 'admin.setting.index'
     ]
 
 ];

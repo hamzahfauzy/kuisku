@@ -298,7 +298,7 @@ class KuisController
             if(count(request()->validate($data, $validate)) == 0)
             {
                 $excerpt  = strWordCut($request->post_content,100);
-                $kuis = Sesi::where('post_author_id',session()->get('id'))->where('id',$request->id)->firts();
+                $kuis = Sesi::where('post_author_id',session()->get('id'))->where('id',$request->id)->first();
                 $post_parent_id = $kuis->post_parent_id;
                 $kuis->save([
                     'post_title'     => $request->post_title,

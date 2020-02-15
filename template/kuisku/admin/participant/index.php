@@ -5,7 +5,6 @@ $this->visited = "peserta";
 $this->js = [
     asset('js/sweetalert2@9.js'),
     asset('js/sweetalert2.min.js'),
-    asset('js/ckeditor.js'),
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">

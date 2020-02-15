@@ -230,6 +230,12 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/question/image-upload' => [
+        'middleware' => 'Admin',
+        'callback' => 'SoalController@imageUpload',
+        'return'   => 'false'
+    ],
+
     'admin/question/answer/update' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@updateAnswer',

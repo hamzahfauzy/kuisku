@@ -2,10 +2,6 @@
 $this->title .= " | Kategori"; 
 $this->visited = "kategori";
 
-// $this->css = [
-//     asset('css/wordpress-admin.css')
-// ];
-
 $this->js = [
     asset('js/sweetalert2@9.js'),
     asset('js/sweetalert2.min.js'),

@@ -17,8 +17,8 @@ class IndexController
             $partSesi->sesi();
             $partSesi->sesi->waktu_mulai = str_replace('T',' ',$partSesi->sesi->meta('waktu_mulai')).':00';
             $partSesi->sesi->waktu_selesai = str_replace('T',' ',$partSesi->sesi->meta('waktu_selesai')).':00';
-            $waktu_mulai = strtotime($partSesi->sesi->waktu_mulai,date('Y-m-d H:i:s'));
-            $waktu_selesai = strtotime($partSesi->sesi->waktu_selesai,date('Y-m-d H:i:s'));
+            $waktu_mulai = strtotime($partSesi->sesi->waktu_mulai);
+            $waktu_selesai = strtotime($partSesi->sesi->waktu_selesai);
             if($now > $waktu_mulai && $now < $waktu_selesai && !$currentSession)
             {
                 $currentSession = $partSesi;

@@ -1,14 +1,11 @@
 <?php 
 $this->title .= " | Soal"; 
 $this->visited = "soal";
-// $this->css = [
-//     asset('css/wordpress-admin.css')
-// ];
 
 $this->js = [
     asset('js/sweetalert2@9.js'),
     asset('js/sweetalert2.min.js'),
-    asset('js/ckeditor.js'),
+    asset('js/ckeditor/ckeditor.js'),
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
@@ -70,7 +67,7 @@ $this->js = [
             </div>
             <div class="form-group">
                 <label for="description">Deskripsi</label>
-                <textarea name="description" rows="10" id="description" class="form-control editor"></textarea>
+                <textarea name="editor" rows="10" id="editor" class="form-control editor"></textarea>
             </div>
             <div class="form-group">
                 <label for="category">Kategori</label>
@@ -112,7 +109,7 @@ $this->js = [
             </div>
             <div class="form-group">
                 <label for="description">Deskripsi</label>
-                <textarea name="description" id="description" class="form-control editor2"></textarea>
+                <textarea name="editor2" id="editor2" class="form-control editor2"></textarea>
             </div>
             <div class="form-group">
                 <label for="category">Kategori</label>
@@ -150,7 +147,7 @@ $this->js = [
             <input type="hidden" name="id" id="id">
             <div class="form-group">
                 <label for="description">Deskripsi</label>
-                <textarea name="description" id="description" class="form-control editor3"></textarea>
+                <textarea name="editor3" id="editor3" class="form-control editor3"></textarea>
             </div>
         </form>
         <div class="table-panel">
@@ -177,38 +174,56 @@ $this->js = [
 var dataSoal   = {};
 var dataAnswer = {};
 
-ClassicEditor
-.create( document.querySelector( '.editor' ), {
-	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-} )
-.then( editor => {
-	window.editor = editor;
-} )
-.catch( err => {
-	console.error( err.stack );
-} );
+CKEDITOR.replace( 'editor', {
+  height: 300,
+  filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
+  filebrowserUploadMethod:"form"
+});
 
-ClassicEditor
-.create( document.querySelector( '.editor2' ), {
-	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-} )
-.then( editor => {
-	window.editor2 = editor;
-} )
-.catch( err => {
-	console.error( err.stack );
-} );
+CKEDITOR.replace( 'editor2', {
+  height: 300,
+  filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
+  filebrowserUploadMethod:"form"
+});
 
-ClassicEditor
-.create( document.querySelector( '.editor3' ), {
-	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-} )
-.then( editor => {
-	window.editor3 = editor;
-} )
-.catch( err => {
-	console.error( err.stack );
-} );
+CKEDITOR.replace( 'editor3' , {
+  height: 300,
+  filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
+  filebrowserUploadMethod:"form"
+});
+
+// ClassicEditor
+// .create( document.querySelector( '.editor' ), {
+// 	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
+// } )
+// .then( editor => {
+// 	window.editor = editor;
+// } )
+// .catch( err => {
+// 	console.error( err.stack );
+// } );
+
+// ClassicEditor
+// .create( document.querySelector( '.editor2' ), {
+// 	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
+// } )
+// .then( editor => {
+// 	window.editor2 = editor;
+// } )
+// .catch( err => {
+// 	console.error( err.stack );
+// } );
+
+// ClassicEditor
+// .create( document.querySelector( '.editor3' ), {
+// 	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
+// } )
+// .then( editor => {
+// 	window.editor3 = editor;
+// } )
+// .catch( err => {
+// 	console.error( err.stack );
+// } );
 
 async function loadData()
 {
@@ -228,7 +243,7 @@ async function simpanSoal()
     var data = {
         post_title:$('#addQuestionForm').find('#title').val(),
         // post_content:$('#addQuestionForm').find('#description').val(),
-        post_content:window.editor.getData(),
+        post_content:CKEDITOR.instances.editor.getData(),
         categories:categories,
     }
 
@@ -259,7 +274,7 @@ async function simpanSoal()
             'success'
         )
         document.getElementById('addQuestionForm').reset()
-        window.editor.setData('')
+        CKEDITOR.instances.editor.setData('')
         dataSoal = response.questions
         fetchToTable()
     }
@@ -277,7 +292,7 @@ async function editSoal()
         id:$('#editQuestionForm').find('#id').val(),
         post_title:$('#editQuestionForm').find('#title').val(),
         // post_content:$('#editQuestionForm').find('#description').val(),
-        post_content:window.editor2.getData(),
+        post_content:CKEDITOR.instances.editor2.getData(),
         categories:categories,
     }
 
@@ -311,7 +326,7 @@ async function editSoal()
         $('#editQuestionForm #category option').each(function(){
             $(this).removeAttr('selected')
         })
-        window.editor2.setData('')
+        CKEDITOR.instances.editor2.setData('')
         dataSoal = response.questions
         fetchToTable()
     }
@@ -323,7 +338,7 @@ async function saveAnswer()
     var data = {
         post_parent_id:$('#answerForm').find('#id').val(),
         // post_content:$('#answerForm').find('#description').val(),
-        post_content:window.editor3.getData(),
+        post_content:CKEDITOR.instances.editor3.getData(),
     }
 
     let request = await fetch('<?= route('admin/question/answer/insert') ?>',{
@@ -353,7 +368,7 @@ async function saveAnswer()
             'success'
         )
         // $('#answerForm').find('#description').val("")
-        window.editor3.setData('')
+        CKEDITOR.instances.editor3.setData('')
         await fetchJawaban($('#answerForm').find('#id').val())
     }
 
@@ -398,7 +413,7 @@ async function fetchEditSoal(id)
     let response = await request.json()
     $('#editQuestionForm').find('#id').val(response.id)
     $('#editQuestionForm').find('#title').val(response.post_title)
-    window.editor2.setData(response.post_content)
+    CKEDITOR.instances.editor2.setData(response.post_content)
     // $('#editQuestionForm').find('#description').val(response.post_content)
     response.categories.forEach(category => {
         $('#editQuestionForm #category option').each(function(){

@@ -26,7 +26,7 @@ class HomeController
                 'total' => $total
             ];
         }
-        else
+        elseif(session()->user()->user_level == 'admin')
         {
             $user = session()->user();
             $customer = $user->customer();
@@ -43,6 +43,13 @@ class HomeController
                 'total' => $total
             ];
         }
+        return [
+            'soal' => 0, 
+            'kuis' => 0,
+            'peserta' => 0,
+            'kategori' => 0,
+            'total' => 0
+        ];
     }
 
     function setting()

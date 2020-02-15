@@ -27,7 +27,7 @@
     <?php endif ?>
     <?php elseif(session()->user()->user_level == 'master'): ?>
         <li>
-            <a href="<?= base_url()?>"><i class="fa fa-home fa-fw"></i> Dashboard</a>
+            <a href="<?= base_url()?>" class="<?= $this->visited == 'index' ? 'active' : '' ?>"><i class="fa fa-home fa-fw"></i> Dashboard</a>
         </li>
         <li>
             <a href="<?= route('master/category')?>" class="<?= $this->visited == 'kategori' ? 'active' : '' ?>"><i class="fa fa-list fa-fw"></i> Categories</a>

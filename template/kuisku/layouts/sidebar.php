@@ -25,6 +25,28 @@
             <a href="<?= base_url()?>/login">Log In</a>
         </li>
     <?php endif ?>
+    <?php elseif(session()->user()->user_level == 'master'): ?>
+        <li>
+            <a href="<?= base_url()?>"><i class="fa fa-home fa-fw"></i> Dashboard</a>
+        </li>
+        <li>
+            <a href="<?= route('master/category')?>" class="<?= $this->visited == 'kategori' ? 'active' : '' ?>"><i class="fa fa-list fa-fw"></i> Categories</a>
+        </li>
+        <!-- <li>
+            <a href="<?= route('master/category')?>" class="<?= $this->visited == 'product' ? 'active' : '' ?>"><i class="fa fa-briefcase fa-fw"></i> Products</a>
+        </li> -->
+        <li>
+            <a href="<?= route('master/customers')?>" class="<?= $this->visited == 'customers' ? 'active' : '' ?>"><i class="fa fa-vcard fa-fw"></i> Customers</a>
+        </li>
+        <!-- <li>
+            <a href="<?= route('master/category')?>" class="<?= $this->visited == 'customer' ? 'active' : '' ?>"><i class="fa fa-pie-chart fa-fw"></i> Subscriptions</a>
+        </li> -->
+        <li>
+            <a href="<?= route('master/users')?>" class="<?= $this->visited == 'users' ? 'active' : '' ?>"><i class="fa fa-users fa-fw"></i> All Users</a>
+        </li>
+        <li>
+            <a href="<?= base_url()?>/logout"><i class="fa fa-sign-out fa-fw"></i> Log Out</a>
+        </li>
     <?php else: ?>
         <li>
             <a href="<?= base_url()?>"><i class="fa fa-home fa-fw"></i> Beranda</a>

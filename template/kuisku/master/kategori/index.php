@@ -1,18 +1,21 @@
 <?php 
-$this->title .= " | Peserta"; 
-$this->visited = "peserta";
+$this->title .= " | Kategori"; 
+$this->visited = "kategori";
+
+// $this->css = [
+//     asset('css/wordpress-admin.css')
+// ];
 
 $this->js = [
     asset('js/sweetalert2@9.js'),
     asset('js/sweetalert2.min.js'),
-    asset('js/ckeditor.js'),
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
-            <h2>Peserta</h2>
+            <h2>Kategori</h2>
         </div>
     </div>
 
@@ -26,14 +29,14 @@ $this->js = [
                     <div class="panel-content not-grow">
                         <div class="form-inline">
                             <label for="">Cari &nbsp;</label>
-                            <input type="text" name="keyword" class="form-control" placeholder="Kata Kunci.." onkeyup="filterPeserta(this.value)">
+                            <input type="text" name="keyword" class="form-control" placeholder="Kata Kunci.." onkeyup="filterKategori(this.value)">
                         </div>
                     </div>
                 </div>
-                <table class="table table-bordered table-striped table-peserta">
+                <table class="table table-bordered table-striped table-kategori">
                     <tbody>
                         <tr>
-                            <td colspan="3"><i>Tidak ada data!</i></td>
+                            <td><i>Tidak ada data!</i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -44,33 +47,29 @@ $this->js = [
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Peserta</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Tambah Kategori</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form method="post" id="addParticipantForm" action="<?= route('admin/participant/insert') ?>">
+        <form method="post" id="addCategoryForm" action="<?= route('admin/category/insert') ?>">
             <div class="form-group">
-                <label for="title">Nama</label>
+                <label for="name">Nama Kategori</label>
                 <input type="text" name="name" id="name" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <label for="name">Deskripsi</label>
+                <textarea name="description" id="description" class="form-control"></textarea>
             </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-close"></i> Tutup</button>
-        <button type="button" class="btn btn-primary" onclick="simpanPeserta()"><i class="fa fa-save"></i> Simpan</button>
+        <button type="button" class="btn btn-primary" onclick="simpanKategori()"><i class="fa fa-save"></i> Simpan</button>
       </div>
     </div>
   </div>
@@ -78,59 +77,53 @@ $this->js = [
 
 <!-- Modal Edit -->
 <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Peserta</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Edit Kategori</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form method="post" id="editParticipantForm" action="<?= route('admin/question/insert') ?>">
+        <form method="post" id="editCategoryForm" action="<?= route('admin/category/insert') ?>">
             <input type="hidden" name="id" id="id">
             <div class="form-group">
-                <label for="title">Nama</label>
+                <label for="name">Nama Kategori</label>
                 <input type="text" name="name" id="name" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password <small>(Kosongkan jika tidak di update)</small></label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <label for="name">Deskripsi</label>
+                <textarea name="description" id="description" class="form-control"></textarea>
             </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-close"></i> Tutup</button>
-        <button type="button" class="btn btn-primary" onclick="editPeserta()"><i class="fa fa-save"></i> Update</button>
+        <button type="button" class="btn btn-primary" onclick="editKategori()"><i class="fa fa-save"></i> Update</button>
       </div>
     </div>
   </div>
 </div>
 
-<script async defer>
-var dataPeserta   = {};
-
+<script defer>
+var dataKategori = {};
 async function loadData()
 {
-    let request = await fetch('<?= route('admin/participant/get') ?>')
+    let request = await fetch('<?= route('master/category/get') ?>')
     let response = await request.json()
-    dataPeserta = response
+    dataKategori = response
     fetchToTable()
 }
 
-async function simpanPeserta()
+async function simpanKategori()
 {
     var data = {
-        user_name:$('#addParticipantForm').find('#name').val(),
-        user_email:$('#addParticipantForm').find('#email').val(),
-        user_pass:$('#addParticipantForm').find('#password').val(),
+        category_name:$('#addCategoryForm').find('input#name').val(),
+        category_description:$('#addCategoryForm').find('textarea#description').val(),
     }
 
-    let request = await fetch('<?= route('admin/participant/insert') ?>',{
+    let request = await fetch('<?= route('master/category/insert') ?>',{
         method :'POST',
         headers : {
             'Content-Type':'application/json'
@@ -153,36 +146,26 @@ async function simpanPeserta()
     {
         Swal.fire(
             'Saved!',
-            'Peserta berhasil disimpan.',
+            'Kategori berhasil disimpan.',
             'success'
         )
-        document.getElementById('addParticipantForm').reset()
-        dataPeserta = response
+        document.getElementById('addCategoryForm').reset()
+        dataKategori = response
         fetchToTable()
     }
 
 }
 
-async function fetchEditPeserta(id)
+async function editKategori()
 {
-    $('#editParticipantForm').trigger('reset')
-    let request = await fetch('<?= base_url() ?>/admin/participant/find/'+id)
-    let response = await request.json()
-    $('#editParticipantForm').find('#id').val(response.id)
-    $('#editParticipantForm').find('#name').val(response.user_name)
-    $('#editParticipantForm').find('#email').val(response.user_email)
-}
 
-async function editPeserta()
-{
     var data = {
-        id:$('#editParticipantForm').find('#id').val(),
-        user_name:$('#editParticipantForm').find('#name').val(),
-        user_email:$('#editParticipantForm').find('#email').val(),
-        user_pass:$('#editParticipantForm').find('#password').val(),
+        id:$('#editCategoryForm').find('#id').val(),
+        category_name:$('#editCategoryForm').find('#name').val(),
+        category_description:$('#editCategoryForm').find('#description').val(),
     }
 
-    let request = await fetch('<?= route('admin/participant/update') ?>',{
+    let request = await fetch('<?= route('master/category/update') ?>',{
         method :'POST',
         headers : {
             'Content-Type':'application/json'
@@ -205,11 +188,11 @@ async function editPeserta()
     {
         Swal.fire(
             'Saved!',
-            'Peserta berhasil diupdate.',
+            'Kategori berhasil diupdate.',
             'success'
         )
-        document.getElementById('editParticipantForm').reset()
-        dataPeserta = response
+        document.getElementById('editCategoryForm').reset()
+        dataKategori = response
         fetchToTable()
     }
 
@@ -218,38 +201,36 @@ async function editPeserta()
 function fetchToTable(data = false)
 {
     if(!data)
-        data = dataPeserta
-    $('.table-peserta > tbody').html('')
+        data = dataKategori
+    $('.table-kategori').html('')
     if(data.length == 0)
     {
-        $('.table-peserta > tbody').html('<tr><td colspan="2"><i>Tidak ada data!</i></td></tr>')
+        $('.table-kategori').html('<tr><td><i>Tidak ada data!</i></td></tr>')
     }
 
     data.forEach(val => {
-        $('.table-peserta > tbody').append(`<tr>
+        $('.table-kategori').append(`<tr>
             <td>
-                <b>${val.user_name}</b>
-                <br>
-                ${val.user_email}
-                <br>
-                <a href="javascript:void(0)" onclick="fetchEditPeserta(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
-                <a href="javascript:void(0)" onclick="deletePeserta(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
+                <b>${val.category_name}</b>
+                <p>${val.category_description}</p>
+                <a href="javascript:void(0)" onclick="fetchEditKategori(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
+                <a href="javascript:void(0)" onclick="deleteKategori(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
     })
 }
 
-async function fetchEditPeserta(id)
+async function fetchEditKategori(id)
 {
-    $('#editParticipantForm').trigger('reset')
-    let request = await fetch('<?= base_url() ?>/admin/participant/find/'+id)
+    $('#editCategoryForm').trigger('reset')
+    let request = await fetch('<?= base_url() ?>/master/category/find/'+id)
     let response = await request.json()
-    $('#editParticipantForm').find('#id').val(response.id)
-    $('#editParticipantForm').find('#name').val(response.user_name)
-    $('#editParticipantForm').find('#email').val(response.user_email)
+    $('#editCategoryForm').find('#id').val(response.id)
+    $('#editCategoryForm').find('#name').val(response.category_name)
+    $('#editCategoryForm').find('#description').val(response.category_description)
 }
 
-async function deletePeserta(id)
+async function deleteKategori(id)
 {
     Swal.fire({
         title: 'Konfirmasi ?',
@@ -261,7 +242,7 @@ async function deletePeserta(id)
         confirmButtonText: 'Ya'
     }).then(async (result) => {
         if (result.value) {
-            let request = await fetch('<?= route('admin/participant/delete') ?>',{
+            let request = await fetch('<?= route('master/category/delete') ?>',{
                 method :'POST',
                 headers : {
                     'Content-Type':'application/json'
@@ -277,27 +258,27 @@ async function deletePeserta(id)
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Something went wrong!',
-                    footer: '<a href="javascript:void(0)">Soal gagal di hapus</a>'
+                    footer: '<a href="javascript:void(0)">Kategori gagal di hapus</a>'
                 })
             }
             else
             {
                 Swal.fire(
                     'Deleted!',
-                    'Peserta berhasil dihapus.',
+                    'Kategori berhasil dihapus.',
                     'success'
                 )
-                dataPeserta = response
+                dataKategori = response
                 fetchToTable()
             }
         }
     })
 }
 
-function filterPeserta(keyword)
+function filterKategori(keyword)
 {
-    var data = dataPeserta.filter(peserta => {
-        return peserta.user_name.includes(keyword) || peserta.user_email.includes(keyword)
+    var data = dataKategori.filter(kategori => {
+        return kategori.category_name.includes(keyword) || kategori.category_description.includes(keyword)
     })
 
     fetchToTable(data)

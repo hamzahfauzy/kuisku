@@ -20,7 +20,7 @@ class AuthController
             
         $request = request()->post();
         $password = md5($request->user_pass);
-        $user = User::where('user_login',$request->user_login)->where('user_pass',$password)->first();
+        $user = User::where('user_login',$request->user_login)->where('user_pass',$password)->where('user_status',1)->first();
         if(empty($user) || $user == null)
         {
             session()->set('error','Username atau Password salah');

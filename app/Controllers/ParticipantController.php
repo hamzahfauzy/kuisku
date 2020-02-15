@@ -1,17 +1,20 @@
 <?php
 namespace App\Controllers;
-use App\Models\Participant;
+use App\Models\{CustomerParticipant, Participant};
 
 class ParticipantController
 {
     function index()
     {
-        return Participant::get();
+        $customer = session()->user()->customer();
+        return $customer->participants();
     }
 
     function find($id)
     {
-        return Participant::where('id',$id)->first();
+        $customer = session()->user()->customer();
+        $customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$id)->first();
+        return $customerParticipant->participant();
     }
 
     function insert()
@@ -19,6 +22,8 @@ class ParticipantController
         $request = request()->post();
         if($request)
         {
+            $customer = session()->user()->customer();
+
             $validate = [
                 'user_name'   => ['required'],
                 'user_email'  => ['required'],
@@ -26,21 +31,48 @@ class ParticipantController
             ];
 
             $data = (array) $request;
-            if(count(request()->validate($data, $validate)) == 0)
+            $_participant = Participant::where('user_email',$request->user_email)->first();
+            if(!$_participant)
+                if(count(request()->validate($data, $validate)) == 0)
+                {
+                    $participant = new Participant;
+                    $participant_id = $participant->save([
+                        'user_name'   => $request->user_name,
+                        'user_email'  => $request->user_email,
+                        'user_login'  => $request->user_email,
+                        'user_pass'   => md5($request->user_pass),
+                        'user_status' => 1,
+
+                    ]);
+
+                    $customerParticipant = new CustomerParticipant;
+                    $customerParticipant->save([
+                        'customer_id' => $customer->id,
+                        'participant_id' => $participant_id
+                    ]);
+
+                    return $this->index();
+
+                }
+                else
+                    return ['status' => false];
+            else
             {
-                $participant = new Participant;
-                $participant->save([
-                    'user_name'   => $request->user_name,
-                    'user_email'  => $request->user_email,
-                    'user_login'  => $request->user_email,
-                    'user_pass'   => md5($request->user_pass),
-                    'user_status' => 1,
+                $participant_id = $_participant->id;
+                $_customerParticipant = CustomerParticipant::where('customer_id',$customerParticipant->id)->where('participant_id',$participant_id)->first();
+                if($_customerParticipant)
+                    return ['status' => false];
+                else
+                {
+                    $customerParticipant = new CustomerParticipant;
+                    $customerParticipant->save([
+                        'customer_id' => $customer->id,
+                        'participant_id' => $participant_id
+                    ]);
 
-                ]);
-
-                return $this->index();
+                    return $this->index();
+                }
             }
-            
         }
 
         return ['status' => false];
@@ -60,7 +92,7 @@ class ParticipantController
             if(count(request()->validate($data, $validate)) == 0)
             {
                 $participant = Participant::find($request->id);
-                $password = !empty($request->user_pass) ? md5($request->user_pass) : $participant->user_pass;
+                $password = !empty($request->user_pass) ? md5($request->user_pass) : $participant->getPassword();
                 $participant->save([
                     'user_name'   => $request->user_name,
                     'user_email'  => $request->user_email,
@@ -81,7 +113,9 @@ class ParticipantController
         $request = request()->post();
         if($request)
         {
-            Participant::delete($request->id);
+            $customer = session()->user()->customer();
+            $customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$request->id)->first();
+            CustomerParticipant::delete($customerParticipant->id);
             return $this->index();
         }
 

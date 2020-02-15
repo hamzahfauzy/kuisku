@@ -11,4 +11,5 @@ class Participant extends User
     {
         return $this->hasMany(SesiUser::class,['user_id'=>'id']);
     }
+
 }

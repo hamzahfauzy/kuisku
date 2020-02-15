@@ -10,18 +10,39 @@ class HomeController
 
     function index()
     {
-        $soal = Soal::count();
-        $kuis = Kuis::count();
-        $peserta = Participant::count();
-        $kategori = Category::count();
-        $total = $soal+$kuis+$peserta+$kategori;
-        return [
-            'soal' => $soal, 
-            'kuis' => $kuis,
-            'peserta' => $peserta,
-            'kategori' => $kategori,
-            'total' => $total
-        ];
+        if(session()->user()->user_level == 'master')
+        {
+
+            $soal = Soal::count();
+            $kuis = Kuis::count();
+            $peserta = Participant::count();
+            $kategori = Category::count();
+            $total = $soal+$kuis+$peserta+$kategori;
+            return [
+                'soal' => $soal, 
+                'kuis' => $kuis,
+                'peserta' => $peserta,
+                'kategori' => $kategori,
+                'total' => $total
+            ];
+        }
+        else
+        {
+            $user = session()->user();
+            $customer = $user->customer();
+            $soal = Soal::where('post_author_id',$user->id)->count();
+            $kuis = Kuis::where('post_author_id',$user->id)->count();
+            $peserta = count($customer->participants());
+            $kategori = Category::count();
+            $total = $soal+$kuis+$peserta+$kategori;
+            return [
+                'soal' => $soal, 
+                'kuis' => $kuis,
+                'peserta' => $peserta,
+                'kategori' => $kategori,
+                'total' => $total
+            ];
+        }
     }
 
     function profile()

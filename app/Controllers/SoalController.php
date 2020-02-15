@@ -8,7 +8,7 @@ class SoalController
 {
     function index()
     {
-        $questions = Soal::get();
+        $questions = Soal::where('post_author_id',session()->get('id'))->get();
         foreach($questions as $question)
             $question->categories();
         $categories = Category::get();
@@ -17,14 +17,14 @@ class SoalController
 
     function find($id)
     {
-        $question = Soal::where('id',$id)->first();
+        $question = Soal::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         $question->categories();
         return $question;
     }
 
     function findAnswer($id)
     {
-        $question = Soal::where('id',$id)->first();
+        $question = Soal::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         return $question->answers();
     }
 
@@ -156,11 +156,11 @@ class SoalController
         $request = request()->post();
         if($request)
         {
-            $jawaban    = Jawaban::where('id',$request->id)->first();
+            $jawaban    = Jawaban::where('id',$request->id)->where('post_author_id',session()->get('id'))->first();
             if($jawaban->post_as == 'Jawaban Salah')
             {
 
-                $allJawaban = Jawaban::where('post_parent_id',$jawaban->post_parent_id)->get();
+                $allJawaban = Jawaban::where('post_parent_id',$jawaban->post_parent_id)->where('post_author_id',session()->get('id'))->get();
                 foreach($allJawaban as $jwb)
                 {
                     $jwb->save([

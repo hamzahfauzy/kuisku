@@ -1,24 +1,25 @@
 <?php
 namespace App\Controllers;
 use App\Models\{Kuis,Sesi,Soal,Participant,ParticipantSession,SesiUser,ExamQuestion,ExamAnswer};
+use App\Models\CustomerParticipant;
 use PostMeta;
 
 class KuisController
 {
     function index()
     {
-        return Kuis::get();
+        return Kuis::where('post_author_id',session()->get('id'))->get();
     }
 
     function find($id)
     {
-        $kuis = Kuis::where('id',$id)->first();
+        $kuis = Kuis::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         return $kuis;
     }
 
     function findSesi($id)
     {
-        $kuis = Sesi::where('id',$id)->first();
+        $kuis = Sesi::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         $kuis->meta->waktu_mulai = $kuis->meta('waktu_mulai');
         $kuis->meta->waktu_selesai = $kuis->meta('waktu_selesai');
         return $kuis;
@@ -54,13 +55,13 @@ class KuisController
 
     function view($id)
     {
-        $kuis = Kuis::where('id',$id)->first();
+        $kuis = Kuis::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         return ['kuis'=>$kuis];
     }
 
     function participant($id)
     {
-        $kuis = Kuis::find($id);
+        $kuis = Kuis::where('post_author_id',session()->get('id'))->where('id',$id)->first();
         $participant = [];
         foreach($kuis->sesi() as $sesi)
         {
@@ -87,24 +88,35 @@ class KuisController
 
     function scoreboard($id)
     {
-        $kuis = Kuis::where('id',$id)->first();
+        $kuis = Kuis::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         return ['kuis'=>$kuis];
     }
 
     function viewSesi($id)
     {
-        $sesi = Sesi::where('id',$id)->first();
+        $customer = session()->user()->customer();
+        $sesi = Sesi::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         $sesi->waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai'));
         $sesi->waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai'));
         $sesi->peserta();
         $sesi->now = date('Y-m-d H:i:s');
-        $all_sesi = Kuis::where('id',$sesi->post_parent_id)->first();
+        $all_sesi = Kuis::where('id',$sesi->post_parent_id)->where('post_author_id',session()->get('id'))->first();
         $peserta = [];
+        $all_participants = [];
+        foreach($customer->participants() as $participant)
+        {
+            $all_participants[$participant->id] = $participant->id;
+        }
+        // print_r($all_participants);
         foreach($all_sesi->sesi() as $_sesi){
             foreach($_sesi->peserta() as $_p)
-                $peserta[] = $_p->user()->id;
+            {
+                // $peserta[] = $_p->user()->id;
+                unset($all_participants[$_p->user()->id]);
+            }
         }
-        $exclude = Participant::whereNotIn('id',$peserta)->get();
+        // print_r($peserta);
+        $exclude = Participant::whereIn('id',$all_participants)->get();
         return ['sesi' => $sesi, 'exclude' => $exclude];
     }
 
@@ -253,7 +265,7 @@ class KuisController
             if(count(request()->validate($data, $validate)) == 0)
             {
                 $excerpt  = strWordCut($request->post_content,100);
-                $kuis = Kuis::find($request->id);
+                $kuis = Kuis::where('post_author_id',session()->get('id'))->where('id',$request->id)->first();
                 $kuis->save([
                     'post_title'     => $request->post_title,
                     'post_content'   => $request->post_content,
@@ -286,7 +298,7 @@ class KuisController
             if(count(request()->validate($data, $validate)) == 0)
             {
                 $excerpt  = strWordCut($request->post_content,100);
-                $kuis = Sesi::find($request->id);
+                $kuis = Sesi::where('post_author_id',session()->get('id'))->where('id',$request->id)->firts();
                 $post_parent_id = $kuis->post_parent_id;
                 $kuis->save([
                     'post_title'     => $request->post_title,
@@ -331,7 +343,7 @@ class KuisController
         $request = request()->post();
         if($request)
         {
-            $kuis = Sesi::find($request->id);
+            $kuis = Sesi::where('post_author_id',session()->get('id'))->where('id',$request->id)->first();
             $post_parent_id = $kuis->post_parent_id;
             Sesi::delete($request->id);
             return $this->getSesi($post_parent_id);

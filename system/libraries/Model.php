@@ -59,7 +59,7 @@ class Model
 		$modelProperties = $model->getProperties();
 		$modelStaticProperties = $model->getStaticProperties();
 		$modelProperties = array_filter($modelProperties, function($arr) use ($className, $modelStaticProperties) {
-			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]))
+			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]) && !$arr->isProtected())
 				return TRUE;
 			else
 				return FALSE;
@@ -149,7 +149,7 @@ class Model
 		$modelProperties = $model->getProperties();
 		$modelStaticProperties = $model->getStaticProperties();
 		$modelProperties = array_filter($modelProperties, function($arr) use ($className, $modelStaticProperties) {
-			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]))
+			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]) && !$arr->isProtected())
 				return TRUE;
 			else
 				return FALSE;
@@ -355,7 +355,7 @@ class Model
 		$modelProperties = $model->getProperties();
 		$modelStaticProperties = $model->getStaticProperties();
 		$modelProperties = array_filter($modelProperties, function($arr) use ($className, $modelStaticProperties) {
-			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]))
+			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]) && !$arr->isProtected())
 				return TRUE;
 			else
 				return FALSE;
@@ -510,7 +510,7 @@ class Model
 		$modelProperties = $model->getProperties();
 		$modelStaticProperties = $model->getStaticProperties();
 		$modelProperties = array_filter($modelProperties, function($arr) use ($className, $modelStaticProperties) {
-			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]))
+			if($arr->class == $className && !isset($modelStaticProperties[$arr->name]) && !$arr->isProtected())
 				return TRUE;
 			else
 				return FALSE;

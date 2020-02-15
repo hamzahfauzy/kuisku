@@ -8,6 +8,150 @@ return [
         'return'   => 'page:index'
     ],
 
+    'master' => [
+        'middleware' => 'Master',
+        'callback' => 'HomeController@index',
+        'return'   => 'page:index'
+    ],
+
+    'master/category' => [
+        'middleware' => 'Master',
+        'callback' => 'CategoryController@index',
+        'return'   => 'view:master.kategori.index'
+    ],
+
+    'master/category/get' => [
+        'middleware' => 'Master',
+        'callback' => 'CategoryController@index',
+        'return'   => 'json'
+    ],
+
+    'master/category/insert' => [
+        'middleware' => 'Master',
+        'callback' => 'CategoryController@insert',
+        'return'   => 'json'
+    ],
+
+    'master/category/update' => [
+        'middleware' => 'Master',
+        'callback' => 'CategoryController@update',
+        'return'   => 'json'
+    ],
+
+    'master/category/find/{id}' => [
+        'middleware' => 'Master',
+        'callback' => 'CategoryController@find',
+        'return'   => 'json'
+    ],
+
+    'master/category/delete' => [
+        'middleware' => 'Master',
+        'callback' => 'CategoryController@delete',
+        'return'   => 'json'
+    ],
+
+    'master/customers' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@index',
+        'return'   => 'view:master.customer.index'
+    ],
+
+    'master/customers/get' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@index',
+        'return'   => 'json'
+    ],
+
+    'master/customers/insert' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@insert',
+        'return'   => 'json'
+    ],
+
+    'master/customers/update' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@update',
+        'return'   => 'json'
+    ],
+
+    'master/customers/find/{id}' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@find',
+        'return'   => 'json'
+    ],
+
+    'master/customers/delete' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@delete',
+        'return'   => 'json'
+    ],
+
+    'master/customers/add-user' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@addUser',
+        'return'   => 'json'
+    ],
+
+    'master/customers/remove-user' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@removeUser',
+        'return'   => 'json'
+    ],
+
+    'master/customers/{id}' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@users',
+        'return'   => 'view:master.customer.users'
+    ],
+
+    'master/customers/{id}/get-users' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@users',
+        'return'   => 'json'
+    ],
+
+    'master/customers/{id}/get-admin' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\CustomerController@getAdmin',
+        'return'   => 'json'
+    ],
+
+    'master/users' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\UserController@index',
+        'return'   => 'view:master.user.index'
+    ],
+
+    'master/users/get' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\UserController@index',
+        'return'   => 'json'
+    ],
+
+    'master/users/insert' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\UserController@insert',
+        'return'   => 'json'
+    ],
+
+    'master/users/update' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\UserController@update',
+        'return'   => 'json'
+    ],
+
+    'master/users/find/{id}' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\UserController@find',
+        'return'   => 'json'
+    ],
+
+    'master/users/delete' => [
+        'middleware' => 'Master',
+        'callback' => 'Master\UserController@delete',
+        'return'   => 'json'
+    ],
+
     'admin' => [
         'middleware' => 'Admin',
         'callback' => 'HomeController@index',
@@ -23,30 +167,6 @@ return [
     'admin/category/get' => [
         'middleware' => 'Admin',
         'callback' => 'CategoryController@index',
-        'return'   => 'json'
-    ],
-
-    'admin/category/insert' => [
-        'middleware' => 'Admin',
-        'callback' => 'CategoryController@insert',
-        'return'   => 'json'
-    ],
-
-    'admin/category/update' => [
-        'middleware' => 'Admin',
-        'callback' => 'CategoryController@update',
-        'return'   => 'json'
-    ],
-
-    'admin/category/find/{id}' => [
-        'middleware' => 'Admin',
-        'callback' => 'CategoryController@find',
-        'return'   => 'json'
-    ],
-
-    'admin/category/delete' => [
-        'middleware' => 'Admin',
-        'callback' => 'CategoryController@delete',
         'return'   => 'json'
     ],
 

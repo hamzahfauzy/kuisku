@@ -208,7 +208,7 @@ async function editPeserta()
             'Peserta berhasil diupdate.',
             'success'
         )
-        document.getElementById('editParticipantForm').reset()
+        document.getElementById('editPesertaForm').reset()
         dataPeserta = response
         fetchToTable()
     }

@@ -1,6 +1,6 @@
 <?php 
-$this->title .= " | Peserta"; 
-$this->visited = "peserta";
+$this->title .= " | Customers"; 
+$this->visited = "customers";
 
 $this->js = [
     asset('js/sweetalert2@9.js'),
@@ -12,7 +12,7 @@ $this->js = [
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
-            <h2>Peserta</h2>
+            <h2>Customers</h2>
         </div>
     </div>
 
@@ -47,13 +47,13 @@ $this->js = [
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Peserta</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Tambah Customer</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form method="post" id="addParticipantForm" action="<?= route('admin/participant/insert') ?>">
+        <form method="post" id="addParticipantForm" action="<?= route('master/customers/insert') ?>">
             <div class="form-group">
                 <label for="title">Nama</label>
                 <input type="text" name="name" id="name" class="form-control" required>
@@ -63,8 +63,12 @@ $this->js = [
                 <input type="email" name="email" id="email" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <label for="no_telepon">No Telepon</label>
+                <input type="tel" name="no_telepon" id="no_telepon" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="alamat">Alamat</label>
+                <textarea name="alamat" id="alamat" class="form-control" required></textarea>
             </div>
         </form>
       </div>
@@ -81,13 +85,13 @@ $this->js = [
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Edit Peserta</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Edit Customer</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form method="post" id="editParticipantForm" action="<?= route('admin/question/insert') ?>">
+        <form method="post" id="editParticipantForm" action="<?= route('master/customers/insert') ?>">
             <input type="hidden" name="id" id="id">
             <div class="form-group">
                 <label for="title">Nama</label>
@@ -98,8 +102,12 @@ $this->js = [
                 <input type="email" name="email" id="email" class="form-control" required>
             </div>
             <div class="form-group">
-                <label for="password">Password <small>(Kosongkan jika tidak di update)</small></label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <label for="no_telepon">No Telepon</label>
+                <input type="tel" name="no_telepon" id="no_telepon" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="alamat">Alamat</label>
+                <textarea name="alamat" id="alamat" class="form-control" required></textarea>
             </div>
         </form>
       </div>
@@ -116,7 +124,7 @@ var dataPeserta   = {};
 
 async function loadData()
 {
-    let request = await fetch('<?= route('admin/participant/get') ?>')
+    let request = await fetch('<?= route('master/customers/get') ?>')
     let response = await request.json()
     dataPeserta = response
     fetchToTable()
@@ -125,12 +133,13 @@ async function loadData()
 async function simpanPeserta()
 {
     var data = {
-        user_name:$('#addParticipantForm').find('#name').val(),
-        user_email:$('#addParticipantForm').find('#email').val(),
-        user_pass:$('#addParticipantForm').find('#password').val(),
+        nama:$('#addParticipantForm').find('#name').val(),
+        email:$('#addParticipantForm').find('#email').val(),
+        no_telepon:$('#addParticipantForm').find('#no_telepon').val(),
+        alamat:$('#addParticipantForm').find('#alamat').val(),
     }
 
-    let request = await fetch('<?= route('admin/participant/insert') ?>',{
+    let request = await fetch('<?= route('master/customers/insert') ?>',{
         method :'POST',
         headers : {
             'Content-Type':'application/json'
@@ -153,7 +162,7 @@ async function simpanPeserta()
     {
         Swal.fire(
             'Saved!',
-            'Peserta berhasil disimpan.',
+            'Customer berhasil disimpan.',
             'success'
         )
         document.getElementById('addParticipantForm').reset()
@@ -166,23 +175,26 @@ async function simpanPeserta()
 async function fetchEditPeserta(id)
 {
     $('#editParticipantForm').trigger('reset')
-    let request = await fetch('<?= base_url() ?>/admin/participant/find/'+id)
+    let request = await fetch('<?= base_url() ?>/master/customers/find/'+id)
     let response = await request.json()
     $('#editParticipantForm').find('#id').val(response.id)
-    $('#editParticipantForm').find('#name').val(response.user_name)
-    $('#editParticipantForm').find('#email').val(response.user_email)
+    $('#editParticipantForm').find('#name').val(response.nama)
+    $('#editParticipantForm').find('#email').val(response.email)
+    $('#editParticipantForm').find('#alamat').val(response.alamat)
+    $('#editParticipantForm').find('#no_telepon').val(response.no_telepon)
 }
 
 async function editPeserta()
 {
     var data = {
         id:$('#editParticipantForm').find('#id').val(),
-        user_name:$('#editParticipantForm').find('#name').val(),
-        user_email:$('#editParticipantForm').find('#email').val(),
-        user_pass:$('#editParticipantForm').find('#password').val(),
+        nama:$('#editParticipantForm').find('#name').val(),
+        email:$('#editParticipantForm').find('#email').val(),
+        alamat:$('#editParticipantForm').find('#alamat').val(),
+        no_telepon:$('#editParticipantForm').find('#no_telepon').val(),
     }
 
-    let request = await fetch('<?= route('admin/participant/update') ?>',{
+    let request = await fetch('<?= route('master/customers/update') ?>',{
         method :'POST',
         headers : {
             'Content-Type':'application/json'
@@ -205,10 +217,10 @@ async function editPeserta()
     {
         Swal.fire(
             'Saved!',
-            'Peserta berhasil diupdate.',
+            'Customer berhasil diupdate.',
             'success'
         )
-        document.getElementById('editParticipantForm').reset()
+        // document.getElementById('editParticipantForm').reset()
         dataPeserta = response
         fetchToTable()
     }
@@ -228,25 +240,16 @@ function fetchToTable(data = false)
     data.forEach(val => {
         $('.table-peserta > tbody').append(`<tr>
             <td>
-                <b>${val.user_name}</b>
+                <b>${val.nama}</b>
                 <br>
-                ${val.user_email}
+                ${val.email}
                 <br>
+                <a href="<?= base_url() ?>/master/customers/${val.id}" class="act-btn jawaban-btn"><i class="fa fa-users"></i> Users</a> |
                 <a href="javascript:void(0)" onclick="fetchEditPeserta(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deletePeserta(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
     })
-}
-
-async function fetchEditPeserta(id)
-{
-    $('#editParticipantForm').trigger('reset')
-    let request = await fetch('<?= base_url() ?>/admin/participant/find/'+id)
-    let response = await request.json()
-    $('#editParticipantForm').find('#id').val(response.id)
-    $('#editParticipantForm').find('#name').val(response.user_name)
-    $('#editParticipantForm').find('#email').val(response.user_email)
 }
 
 async function deletePeserta(id)
@@ -261,7 +264,7 @@ async function deletePeserta(id)
         confirmButtonText: 'Ya'
     }).then(async (result) => {
         if (result.value) {
-            let request = await fetch('<?= route('admin/participant/delete') ?>',{
+            let request = await fetch('<?= route('master/customers/delete') ?>',{
                 method :'POST',
                 headers : {
                     'Content-Type':'application/json'
@@ -284,7 +287,7 @@ async function deletePeserta(id)
             {
                 Swal.fire(
                     'Deleted!',
-                    'Peserta berhasil dihapus.',
+                    'Customer berhasil dihapus.',
                     'success'
                 )
                 dataPeserta = response

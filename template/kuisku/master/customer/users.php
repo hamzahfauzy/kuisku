@@ -122,7 +122,7 @@ function fetchToTable(data = false)
     if(!data)
         data = dataPeserta
     $('.table-peserta > tbody').html('')
-    if(data.length == 0)
+    if(data.users.length == 0)
     {
         $('.table-peserta > tbody').html('<tr><td colspan="2"><i>Tidak ada data!</i></td></tr>')
     }
@@ -204,7 +204,7 @@ async function deletePeserta(customer_id, user_id)
                     'User berhasil dihapus.',
                     'success'
                 )
-                dataPeserta = response
+                dataPeserta = response.customer
                 fetchToTable()
             }
         }

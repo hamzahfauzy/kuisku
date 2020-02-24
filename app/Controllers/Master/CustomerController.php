@@ -52,7 +52,7 @@ class CustomerController
         $customerUser = CustomerUser::where('customer_id',$request->customer_id)->where('user_id',$request->user_id)->first();
         CustomerUser::delete($customerUser->id);
 
-        return $this->index();
+        return $this->users($request->customer_id);
     }
 
     function insert()

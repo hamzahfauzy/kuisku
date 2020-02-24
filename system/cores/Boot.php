@@ -11,7 +11,8 @@ class Boot
         $pages  = pages();
         $routes = routes();
 
-        $URI = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $_SERVER['REQUEST_URI'];
+        // $URI = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $_SERVER['REQUEST_URI'];
+        $URI = parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
         $URI = trim($URI,'/');
         $URI = empty($URI) ? '/' : $URI;
         
@@ -38,12 +39,12 @@ class Boot
                 $classname = 'App\\Controllers\\'.$classname;
                 $callback = new $classname;
                 if(method_exists($callback, $method))
-                    $callback = $callback->{$method}();
+                    $callback = call_user_func(array($classname,$method));
                 else
                     showError('Method '.$method.' in '.$classname.' doesn\'t exists');
             }
             else
-                $callback = $callback();
+                $callback = call_user_func($callback);
 
             $data = $callback;
             if(!$route['return'])

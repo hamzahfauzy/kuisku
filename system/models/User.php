@@ -24,7 +24,10 @@ class User extends Model
 
     function customer()
     {
-        return $this->hasOne(CustomerUser::class,['user_id'=>'id'])->customer();
+        $hasOne = $this->hasOne(CustomerUser::class,['user_id'=>'id']);
+        if($hasOne)
+            return $hasOne->customer();
+        return 0;
     }
 
     function getPassword()

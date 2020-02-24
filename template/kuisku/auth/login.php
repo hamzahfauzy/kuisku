@@ -16,6 +16,14 @@
           	<img src="<?= base_url() ?>/assets/logo.png" width="150px">
           	</center>
             <h5 class="card-title text-center"><?= app()['application_name'] ?> LOGIN</h5>
+            <?php if(isset($_COOKIE['error'])){ ?>
+              <div class="alert alert-danger"><?=$_COOKIE['error']?></div>
+            <?php 
+            }
+            unset($_COOKIE['error']);
+            // empty value and expiration one hour before
+            $res = setcookie('error', '', time() - 3600);
+            ?>
             <?php $old_email=""; if(session()->get('error')): $old_email = session()->get('old_email');?>
             <div class="alert alert-danger"><?=session()->get('error')?></div>
             <?php session()->destroy(); endif ?>

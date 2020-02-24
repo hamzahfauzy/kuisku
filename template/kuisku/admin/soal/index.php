@@ -34,8 +34,7 @@ $this->js = [
                     <thead>
                         <tr>
                             <th width="20px">#</th>
-                            <th width="40%">Judul</th>
-                            <th>Ringkasan</th>
+                            <th>Soal</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -62,8 +61,8 @@ $this->js = [
       <div class="modal-body">
         <form method="post" id="addQuestionForm" action="<?= route('admin/question/insert') ?>">
             <div class="form-group">
-                <label for="title">Judul</label>
-                <input type="text" name="title" id="title" class="form-control" required>
+                <!-- <label for="title">Judul</label> -->
+                <input type="hidden" value="Post Soal" name="title" id="title">
             </div>
             <div class="form-group">
                 <label for="description">Deskripsi</label>
@@ -104,8 +103,8 @@ $this->js = [
         <form method="post" id="editQuestionForm" action="<?= route('admin/question/insert') ?>">
             <input type="hidden" name="id" id="id">
             <div class="form-group">
-                <label for="title">Judul</label>
-                <input type="text" name="title" id="title" class="form-control" required>
+                <!-- <label for="title">Judul</label> -->
+                <input type="hidden" value="Post Soal" name="title" id="title">
             </div>
             <div class="form-group">
                 <label for="description">Deskripsi</label>
@@ -191,39 +190,6 @@ CKEDITOR.replace( 'editor3' , {
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
-
-// ClassicEditor
-// .create( document.querySelector( '.editor' ), {
-// 	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-// } )
-// .then( editor => {
-// 	window.editor = editor;
-// } )
-// .catch( err => {
-// 	console.error( err.stack );
-// } );
-
-// ClassicEditor
-// .create( document.querySelector( '.editor2' ), {
-// 	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-// } )
-// .then( editor => {
-// 	window.editor2 = editor;
-// } )
-// .catch( err => {
-// 	console.error( err.stack );
-// } );
-
-// ClassicEditor
-// .create( document.querySelector( '.editor3' ), {
-// 	// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
-// } )
-// .then( editor => {
-// 	window.editor3 = editor;
-// } )
-// .catch( err => {
-// 	console.error( err.stack );
-// } );
 
 async function loadData()
 {
@@ -370,6 +336,7 @@ async function saveAnswer()
         // $('#answerForm').find('#description').val("")
         CKEDITOR.instances.editor3.setData('')
         await fetchJawaban($('#answerForm').find('#id').val())
+        await loadData()
     }
 
 }
@@ -387,20 +354,25 @@ function fetchToTable(data = false)
     var no = 1;
     data.forEach(val => {
         var categories = val.categories.map(e => e.category.category_name ).join(', ')
+        var answer = "<ul>"
+        val.answers.forEach(val => {
+            answer += `<li>${val.post_content}</li>`
+        })
+        answer += '</ul>'
         $('.table-soal > tbody').append(`<tr>
             <td>${no++}</td>
-            <td>
-                <b>${val.post_title}</b>
-                <br>
-                <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-eye"></i> Jawaban</a> |
-                <a href="javascript:void(0)" onclick="fetchEditSoal(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
-                <a href="javascript:void(0)" onclick="deleteSoal(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
-            </td>
             <td>
                 ${val.post_excerpt}<br>
                 <div class="post-tag">
                     <i class="fa fa-tag"></i> ${categories}
                 </div>
+                <br>
+                <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-eye"></i> Jawaban</a> |
+                <a href="javascript:void(0)" onclick="fetchEditSoal(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
+                <a href="javascript:void(0)" onclick="deleteSoal(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
+                <hr>
+                <b>Jawaban</b>
+                ${answer}
             </td>
         </tr>`)
     })
@@ -536,6 +508,7 @@ async function updateJawaban(id)
                     'success'
                 )
                 await fetchJawaban($('#answerForm').find('#id').val())
+                await loadData()
             }
         }
     })
@@ -580,6 +553,7 @@ async function deleteJawaban(id)
                     'success'
                 )
                 await fetchJawaban($('#answerForm').find('#id').val())
+                await loadData()
             }
         }
     })

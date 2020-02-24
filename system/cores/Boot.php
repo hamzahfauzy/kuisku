@@ -39,12 +39,13 @@ class Boot
                 $classname = 'App\\Controllers\\'.$classname;
                 $callback = new $classname;
                 if(method_exists($callback, $method))
-                    $callback = call_user_func(array($classname,$method));
+                    $callback = $callback->{$method}();
+                    // $callback = call_user_func(array($classname,$method));
                 else
                     showError('Method '.$method.' in '.$classname.' doesn\'t exists');
             }
             else
-                $callback = call_user_func($callback);
+                $callback = $callback(); call_user_func($callback);
 
             $data = $callback;
             if(!$route['return'])

@@ -10,7 +10,10 @@ class SoalController
     {
         $questions = Soal::where('post_author_id',session()->get('id'))->get();
         foreach($questions as $question)
+        {
             $question->categories();
+            $question->answers();
+        }
         $categories = Category::get();
         return ['questions' => $questions, 'categories' => $categories];
     }

@@ -1,5 +1,6 @@
 <?php
 namespace App\Controllers;
+use User;
 use App\Models\{CustomerParticipant, Participant};
 
 class ParticipantController
@@ -31,6 +32,9 @@ class ParticipantController
             ];
 
             $data = (array) $request;
+            $user_checker = User::where('user_email',$request->user_email)->first();
+            if($user_checker)
+                return ['status' => false,'msg'=>'Username exists with different role'];
             $_participant = Participant::where('user_email',$request->user_email)->first();
             if(!$_participant)
                 if(count(request()->validate($data, $validate)) == 0)

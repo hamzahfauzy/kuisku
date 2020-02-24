@@ -47,7 +47,7 @@ class KuisController
             $soal[] = $val->post_question_id;
         }
         
-        $all_soal = Soal::whereNotIn('id',$soal)->get();
+        $all_soal = Soal::whereNotIn('id',$soal)->where('post_author_id',session()->get('id'))->get();
         foreach($all_soal as $question)
             $question->categories();
         return ['kuis'=>$kuis,'allSoal'=>$all_soal];

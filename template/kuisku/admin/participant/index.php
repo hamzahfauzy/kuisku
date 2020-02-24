@@ -141,11 +141,14 @@ async function simpanPeserta()
 
     if(response.status == false)
     {
+        var msg = 'Terdapat error saat validasi data'
+        if(response.msg)
+            msg = response.msg
         Swal.fire({
             icon: 'error',
             title: 'Oops...',
             text: 'Something went wrong!',
-            footer: '<a href="javascript:void(0)">Terdapat error saat validasi data</a>'
+            footer: '<a href="javascript:void(0)">'+msg+'</a>'
         })
     }
     else

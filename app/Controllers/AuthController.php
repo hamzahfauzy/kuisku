@@ -28,6 +28,13 @@ class AuthController
             return route('login');
         }
 
+        if(!$user->customer())
+        {
+            session()->set('error','Akun anda sedang tidak aktif.');
+            session()->set('old_email',$request->user_login);
+            return route('login');
+        }
+
         session()->set('id',$user->id);
         return route('/');
         

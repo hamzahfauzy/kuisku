@@ -238,6 +238,7 @@ function fetchToTable(data = false)
         $('.table-peserta > tbody').append(`<tr>
             <td>
                 <b>${val.user_name}</b>
+                (${val.user_level})
                 <br>
                 ${val.user_email}
                 <br>

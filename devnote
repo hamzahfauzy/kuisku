@@ -1,0 +1,4 @@
+run query : fri, 28 feb 2020
+
+UPDATE `posts` set post_as = 1 WHERE post_as = "Jawaban Benar"
+UPDATE `posts` set post_as = 0 WHERE post_as = "Jawaban Salah"

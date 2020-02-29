@@ -345,7 +345,7 @@ async function fetchPeserta(id)
                     <br>
                     ${val.user.user_email}
                     <br>
-                    <a href="javascript:void(0)" onclick="batalkanPeserta(${id},${val.user.id})" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
+                    <a href="javascript:void(0)" onclick="batalkanPeserta(${id},${val.user.id},this)" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
                 </td>
             </tr>`)
         })
@@ -357,7 +357,7 @@ async function fetchPeserta(id)
                     <br>
                     ${val.user_email}
                     <br>
-                    <a href="javascript:void(0)" onclick="jadikanPeserta(${id},${val.id})" class="act-btn jawab-btn"><i class="fa fa-arrow-right"></i> Jadikan Peserta</a>
+                    <a href="javascript:void(0)" onclick="jadikanPeserta(${id},${val.id},this)" class="act-btn jawab-btn"><i class="fa fa-arrow-right"></i> Jadikan Peserta</a>
                 </td>
             </tr>`)
         })
@@ -519,8 +519,10 @@ async function deleteKuis(id)
     })
 }
 
-async function jadikanPeserta(sesi_id, user_id)
+async function jadikanPeserta(sesi_id, user_id, el)
 {
+    el.innerHTML = "Loading..."
+    el.removeAttribute("onclick")
     let request = await fetch('<?= route('admin/kuis/sesi/jadi-peserta') ?>',{
         method :'POST',
         headers : {
@@ -533,8 +535,10 @@ async function jadikanPeserta(sesi_id, user_id)
     fetchPeserta(sesi_id)
 }
 
-async function batalkanPeserta(sesi_id, user_id)
+async function batalkanPeserta(sesi_id, user_id, el)
 {
+    el.innerHTML = "Loading..."
+    el.removeAttribute("onclick")
     let request = await fetch('<?= route('admin/kuis/sesi/batal-peserta') ?>',{
         method :'POST',
         headers : {

@@ -45,7 +45,7 @@ class Boot
                     showError('Method '.$method.' in '.$classname.' doesn\'t exists');
             }
             else
-                $callback = $callback(); call_user_func($callback);
+                $callback = $callback(); // call_user_func($callback);
 
             $data = $callback;
             if(!$route['return'])

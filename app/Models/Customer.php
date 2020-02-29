@@ -34,4 +34,9 @@ class Customer extends Model
 
         return $return;
     }
+
+    function logo()
+    {
+        return $this->hasOne(CustomerLogo::class,['customer_id'=>'id']);
+    }
 }

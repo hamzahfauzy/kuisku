@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Models\{Soal,Jawaban};
 use Category;
+use PostMeta;
 use CategoryPost;
 
 class SoalController
@@ -83,6 +84,7 @@ class SoalController
             $validate = [
                 'post_parent_id' => ['required'],
                 'post_content'   => ['required'],
+                'skor'           => ['required']
             ];
 
             $data = (array) $request;
@@ -97,10 +99,9 @@ class SoalController
                     'post_excerpt'   => $excerpt,
                     'post_parent_id' => $request->post_parent_id,
                     'post_status'    => 1,
-                    'post_as'        => 'Jawaban Salah',
+                    'post_as'        => $request->skor,
                     'post_date'      => 'CURRENT_TIMESTAMP',
                     'post_modified'  => 'CURRENT_TIMESTAMP',
-
                 ]);
 
                 return ['status' => true];

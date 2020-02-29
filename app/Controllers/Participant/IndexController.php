@@ -48,6 +48,11 @@ class IndexController
         {
             $sesi->sesi->kuis()->soal();
             $questions = [];
+            if(!$sesi->sesi->kuis->soal)
+            {
+                showError('Maaf, Soal tidak di temukan untuk ujian ini');
+                return;
+            }
             foreach($sesi->sesi->kuis->soal as $soal)
             $questions[] = $soal->post_question_id;
             $questions = implode(',',$questions);
@@ -69,6 +74,7 @@ class IndexController
 
             $partSesi = ParticipantSession::find($id);
         }
+        
         $questions = explode(',',$partSesi->questions_order);
         $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();
 
@@ -97,7 +103,7 @@ class IndexController
             'exam_question_id' => $examQuestion->id,
             'post_answer_id'   => $request->answer_id,
             'user_id'          => session()->get('id'),
-            'status'           => $jawaban->post_as == 'Jawaban Benar' ? 1 : 0
+            'status'           => $jawaban->post_as
         ]);
 
         return ['status' => 'success'];

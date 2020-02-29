@@ -6,69 +6,52 @@ $this->js = [
     asset('js/sweetalert2@9.js'),
     asset('js/sweetalert2.min.js'),
 ];
+
+$waktu_selesai = str_replace(' ','T',$sesi->sesi->waktu_selesai);
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12 col-md-6">
-            <h2>Ujian</h2>
-        </div>
+<div class="exam-panel">
+    <div class="exam-container">
+        <span>Sisa Waktu</span>
+        <h4 style="margin:0" id="countdown"></h4>
     </div>
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="content-wrapper" style="font-size:16px;line-height:2;">
-            <form method="post">
-                <input type="hidden" name="exam" value="1">
-                <div class="exam-question">
-                    <div class="container">
-                        <h3><?= $s->post_title ?></h3>
-                        <a href="#"><i class="fa fa-tag"></i>
-                        <?php 
-                        foreach($s->categories() as $category):
-                            echo $category->category->category_name;
-                            if($category != end($s->categories))
-                                echo ",";
-                        endforeach; 
-                        ?>
-                        </a>
-                        <hr>
-                        <?= $s->post_content ?>
-                        <br>
-                        <hr>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="exam-options row">
-                        <?php foreach($s->answers() as $answer): ?>
-                        <div class="inputGroup col-sm-12 col-md-6">
-                            <input onchange="sendAnswer(<?=$answer->id?>,<?=$s->id?>)" id="radio<?=$answer->id?>" name="answers[<?=$s->id?>]" type="radio" value="<?= $answer->id ?>" <?= $answer->id == $answered->post_answer_id ? 'checked=""' : '' ?>/>
-                            <label for="radio<?=$answer->id?>"><?= $answer->post_content ?></label>
-                        </div>
-                        <?php endforeach ?>
-                    </div>
-                    <br>
-                </div>
-                <div class="finish-section container">
-                    <?php if($no != 1): ?>
-                    <a href="<?= route('participant/exam/'.($no-1)) ?>" class="btn btn-success"><i class="fa fa-arrow-left fa-fw"></i> Sebelumnya</a>
-                    <?php endif ?>
-
-                    <?php if($no == $numOf): ?>
-                    <a href="javascript:void(0)" onclick="finishExam()" class="btn btn-primary"><i class="fa fa-check"></i> Selesai</a>
-                    <?php endif ?>
-                    
-                    <?php if($no != $numOf): ?>
-                    <a href="<?= route('participant/exam/'.($no+1)) ?>" class="btn btn-success"><i class="fa fa-arrow-right fa-fw"></i> Selanjutnya</a>
-                    <?php endif ?>
-                </div>
-            </form>
-            </div>
-        </div>
-    </div>
+</div>
+<div class="container-fluid exam-html">
+    
 </div>
 
 <script>
+var deadline = new Date("<?=$waktu_selesai?>").getTime(); 
+var x = setInterval(function() { 
+var now = new Date().getTime(); 
+var t = deadline - now; 
+var days = Math.floor(t / (1000 * 60 * 60 * 24)); 
+var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60)); 
+var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60)); 
+var seconds = Math.floor((t % (1000 * 60)) / 1000); 
+days = days < 10 ? "0"+days : days;
+hours = hours < 10 ? "0"+hours : hours;
+minutes = minutes < 10 ? "0"+minutes : minutes;
+seconds = seconds < 10 ? "0"+seconds : seconds;
+document.getElementById("countdown").innerHTML = hours + ":" + minutes + ":" + seconds; 
+    if (t < 0) { 
+        clearInterval(x); 
+        location=location
+    } 
+}, 1000); 
+
+function loadExam(url = false)
+{
+    if(!url)
+        url = '<?= route('participant/exam-partial') ?>'
+    fetch(url)
+    .then(res => res.text())
+    .then(res => {
+        document.querySelector('.exam-html').innerHTML = res
+    })
+
+}
+
 async function sendAnswer(jawaban, soal)
 {
     let request = await fetch('<?= route('participant/exam/answer') ?>',{
@@ -99,4 +82,18 @@ function finishExam()
         }
     })
 }
+
+function nextQuestion(el)
+{
+    event.preventDefault()
+    loadExam(el.href)
+}
+
+function prevQuestion(el)
+{
+    event.preventDefault()
+    loadExam(el.href)
+}
+
+loadExam()
 </script>

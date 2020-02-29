@@ -148,6 +148,10 @@ $this->js = [
                 <label for="description">Deskripsi</label>
                 <textarea name="editor3" id="editor3" class="form-control editor3"></textarea>
             </div>
+            <div class="form-group">
+                <label for="skor">Skor</label>
+                <input type="number" class="form-control" name="skor" id="skor" min="0" value="0">
+            </div>
         </form>
         <div class="table-panel">
             <div class="panel-content">
@@ -305,6 +309,7 @@ async function saveAnswer()
         post_parent_id:$('#answerForm').find('#id').val(),
         // post_content:$('#answerForm').find('#description').val(),
         post_content:CKEDITOR.instances.editor3.getData(),
+        skor:$('#skor').val(),
     }
 
     let request = await fetch('<?= route('admin/question/answer/insert') ?>',{
@@ -334,6 +339,7 @@ async function saveAnswer()
             'success'
         )
         // $('#answerForm').find('#description').val("")
+        $('#skor').val("")
         CKEDITOR.instances.editor3.setData('')
         await fetchJawaban($('#answerForm').find('#id').val())
         await loadData()
@@ -413,11 +419,11 @@ async function fetchJawaban(id)
     var no = 1
 
     response.forEach(val => {
-        var statusJawaban = val.post_as == 'Jawaban Salah' ? '<span style="color:red"><i class="fa fa-close"></i> Jawaban Salah</span>' : '<i class="fa fa-check"></i> Jawaban Benar'
+        var statusJawaban = val.post_as == '0' ? '<span style="color:red"><i class="fa fa-close"></i> Skor 0</span>' : '<i class="fa fa-check"></i> Skor ' + val.post_as
         $('.table-jawaban > tbody').append(`<tr>
             <td>
                 ${val.post_content}
-                <a href="javascript:void(0)" onclick="updateJawaban(${val.id})" class="act-btn jawaban-btn">${statusJawaban}</a> |
+                <a href="javascript:void(0)" class="act-btn jawaban-btn">${statusJawaban}</a> |
                 <a href="javascript:void(0)" onclick="deleteJawaban(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)

@@ -3,7 +3,11 @@
 		<div class="top-flex">
 			<div class="top-brand">
 				<a href="#">
+					<?php if(session()->user()->customer() && session()->user()->customer()->logo()): ?>
+					<img src="<?= session()->user()->customer()->logo()->file_url ?>" width="35px" height="38px" style="object-fit:contain">
+					<?php else: ?>
 					<img src="<?= asset('assets/logo.png') ?>" width="35px">
+					<?php endif ?>
 					<span><?= $this->application_name ?></span>
 				</a>
 			</div>

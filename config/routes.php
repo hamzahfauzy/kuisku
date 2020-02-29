@@ -188,6 +188,12 @@ return [
         'return'   => 'redirect:url'
     ],
 
+    'admin/setting/upload' => [
+        'middleware' => 'Admin',
+        'callback' => 'HomeController@upload',
+        'return'   => 'json'
+    ],
+
     'admin/question/get' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@index',
@@ -432,6 +438,18 @@ return [
         'middleware' => 'Participant',
         'callback'   => 'Participant\IndexController@exam',
         'return'     => 'view:participant.exam'
+    ],
+
+    'participant/exam-partial' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@exam',
+        'return'     => 'partial:participant.exam-partial'
+    ],
+
+    'participant/exam-partial/{no}' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@exam',
+        'return'     => 'partial:participant.exam-partial'
     ],
 
     'login' => [

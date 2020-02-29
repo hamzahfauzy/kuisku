@@ -3,7 +3,7 @@ namespace App\Controllers;
 use User;
 use Page;
 use Category;
-use App\Models\{Soal,Kuis,Participant};
+use App\Models\{Soal,Kuis,Participant,CustomerLogo};
 
 class HomeController
 {
@@ -64,12 +64,52 @@ class HomeController
         $password = !empty($request->password) ? md5($request->password) : $user->getPassword();
         $user->save([
             'user_name'   => $request->nama,
-            'user_email'  => $request->email,
-            'user_login'  => $request->email,
             'user_pass'   => $password,
         ]);
 
         return route('admin/setting');
+    }
+
+    function upload()
+    {
+        if(isset($_FILES['file']['name']))
+        {
+            $file      = $_FILES['file']['tmp_name'];
+            $file_name = $_FILES['file']['name'];
+            $file_name_array = explode(".", $file_name);
+            $extension = end($file_name_array);
+            $new_image_name  = rand() . '.' . $extension;
+            chmod('uploads', 0777);
+            $allowed_extension = array("jpg", "gif", "png");
+            if(in_array($extension, $allowed_extension))
+            {
+                move_uploaded_file($file, 'uploads/' . $new_image_name);
+                $file_url = base_url().'/uploads/' . $new_image_name;
+                
+                $user    = session()->user();
+                $user->customer();
+                $logo    = CustomerLogo::where('customer_id',$user->customer->id)->first();
+                if($logo)
+                {
+                    $logo->save([
+                        'file_url'    => $file_url
+                    ]);
+                }
+                else
+                {
+
+                    $logo    = new CustomerLogo;
+                    $logo->save([
+                        'customer_id' => $user->customer->id,
+                        'file_url'    => $file_url
+                    ]);
+                }
+                        
+                return ['status'=>true,'logo' => $file_url];
+            }
+        }
+        
+        return ['status' => false];
     }
 
     function profile()

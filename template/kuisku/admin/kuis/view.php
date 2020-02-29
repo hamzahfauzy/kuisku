@@ -191,6 +191,17 @@ $this->js = [
 
                 <div class="col-sm-12 col-md-6">
                 <h3>Koleksi Soal</h3>
+                <div class="form-group">
+                    <div class="input-group">
+                    <input type="text" name="keyword" class="form-control" placeholder="Kata Kunci.." onkeyup="filterSoal(this.value)">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <i class="fa fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p></p>
                 <table class="table table-bordered table-striped table-koleksi-soal">
                     <tbody>
                         <tr>
@@ -212,6 +223,7 @@ $this->js = [
 
 <script async defer>
 var dataKuis   = {};
+var dataSoal   = {};
 
 async function loadData()
 {
@@ -225,6 +237,8 @@ async function fetchSoal()
 {
     let request = await fetch('<?= route('admin/kuis/soal/get/'.$kuis->id) ?>')
     let response = await request.json()
+
+    dataSoal = response
 
     $('.table-soal > tbody').html('')
     $('.table-koleksi-soal > tbody').html('')
@@ -259,6 +273,36 @@ async function fetchSoal()
                     <i class="fa fa-tag"></i> ${categories}
                 </div>
                 <a href="javascript:void(0)" onclick="hapusSoal(<?=$kuis->id?>,${val.post_question_id})" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
+            </td>
+        </tr>`)
+    })
+}
+
+async function filterSoal(keyword)
+{
+    keyword = keyword.toLowerCase()
+    var response = dataSoal
+
+    $('.table-koleksi-soal > tbody').html('')
+    
+    var filterSoal = response.allSoal.filter(soal => {
+        var categories = soal.categories.map(e => e.category.category_name ).join(', ')
+        return soal.post_title.toLowerCase().includes(keyword) || soal.post_content.toLowerCase().includes(keyword) || categories.toLowerCase().includes(keyword)
+    })
+
+    if(filterSoal.length == 0)
+        $('.table-koleksi-soal > tbody').html('<tr><td><i>Tidak ada data!</i></td></tr>')
+
+    filterSoal.forEach(val => {
+        var categories = val.categories.map(e => e.category.category_name ).join(', ')
+        $('.table-koleksi-soal > tbody').append(`<tr>
+            <td>
+                <b>${val.post_title}</b><br>
+                ${val.post_excerpt}<br>
+                <div class="post-tag">
+                    <i class="fa fa-tag"></i> ${categories}
+                </div>
+                <a href="javascript:void(0)" onclick="tambahkanSoal(<?=$kuis->id?>,${val.id})" class="act-btn jawab-btn"><i class="fa fa-arrow-right"></i> Tambah Soal</a>
             </td>
         </tr>`)
     })

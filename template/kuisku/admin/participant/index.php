@@ -63,7 +63,17 @@ $this->js = [
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <div class="input-group-append">
+                        <button type="button" class="input-group-text" onclick="showPassword('#addParticipantForm')">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button type="button" class="input-group-text" onclick="generatePassword('#addParticipantForm')">
+                            Generate
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
       </div>
@@ -98,7 +108,17 @@ $this->js = [
             </div>
             <div class="form-group">
                 <label for="password">Password <small>(Kosongkan jika tidak di update)</small></label>
-                <input type="password" name="password" id="password" class="form-control" required>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <div class="input-group-append">
+                        <button type="button" class="input-group-text" onclick="showPassword('#editParticipantForm')">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                        <button type="button" class="input-group-text" onclick="generatePassword('#editParticipantForm')">
+                            Generate
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
       </div>
@@ -112,6 +132,20 @@ $this->js = [
 
 <script async defer>
 var dataPeserta   = {};
+
+function generatePassword(el)
+{
+    el = $(el).find('#password')
+    var randomstring = Math.random().toString(36).slice(-10);
+    el.val(randomstring)
+}
+
+function showPassword(el)
+{
+    el = $(el).find('#password')
+    var changeType = el.attr('type') == 'password' ? 'text' : 'password'
+    el.attr('type',changeType);
+}
 
 async function loadData()
 {

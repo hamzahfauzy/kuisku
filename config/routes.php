@@ -260,6 +260,12 @@ return [
         'return'     => 'page:peserta'
     ],
 
+    'admin/participant/test' => [
+        'middleware' => 'Admin',
+        'callback'   => 'ParticipantController@test',
+        'return'     => 'json'
+    ],
+
     'admin/participant/get' => [
         'middleware' => 'Admin',
         'callback' => 'ParticipantController@index',

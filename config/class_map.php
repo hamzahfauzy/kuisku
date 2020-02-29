@@ -13,6 +13,7 @@ return [
     'Connection'     => 'system/libraries/Connection',
     'QueryBuilder'   => 'system/libraries/QueryBuilder',
     'Controller'     => 'system/libraries/Controller',
+    'ZMail'     => 'system/libraries/ZMail',
 
     'Category'       => 'system/models/Category',
     'CategoryPost'   => 'system/models/CategoryPost',
@@ -22,5 +23,8 @@ return [
     'PostMeta'       => 'system/models/PostMeta',
     'User'           => 'system/models/User',
     'UserMeta'       => 'system/models/UserMeta',
+
+    'PHPMailer\PHPMailer\PHPMailer' => 'system/vendor/PHPMailer/src/PHPMailer',
+    'PHPMailer\PHPMailer\SMTP' => 'system/vendor/PHPMailer/src/SMTP',
 
 ];

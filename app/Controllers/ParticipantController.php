@@ -1,10 +1,33 @@
 <?php
 namespace App\Controllers;
 use User;
+use ZMail;
+use TemplatePartial;
 use App\Models\{CustomerParticipant, Participant};
 
 class ParticipantController
 {
+
+    function test()
+    {
+        $mail = new ZMail;
+        $request = json_decode(json_encode([
+            'user_email' => 'ripsilanti@gmail.com',
+            'user_pass'  => 'password'
+        ]));
+
+        ob_start();
+        new TemplatePartial([
+            'data' => $request
+        ],"mail-template/add-participant");
+        $message = ob_get_clean();
+
+        $send = $mail->send($request->user_email,"Pendaftaran Peserta Ujian",$message);
+        if($send != 1)
+            return ['status' => false, 'message' => $send];
+        return ['status' => 'success'];
+    }
+
     function index()
     {
         $customer = session()->user()->customer();
@@ -39,6 +62,19 @@ class ParticipantController
             if(!$_participant)
                 if(count(request()->validate($data, $validate)) == 0)
                 {
+
+                    $mail = new ZMail;
+
+                    ob_start();
+                    new TemplatePartial([
+                        'data' => $request
+                    ],"mail-template/add-participant");
+                    $message = ob_get_clean();
+
+                    $send = $mail->send($request->user_email,"Pendaftaran Peserta Ujian",$message);
+                    if($send != 1)
+                        return ['status' => false, 'message' => $send];
+
                     $participant = new Participant;
                     $participant_id = $participant->save([
                         'user_name'   => $request->user_name,
@@ -46,7 +82,6 @@ class ParticipantController
                         'user_login'  => $request->user_email,
                         'user_pass'   => md5($request->user_pass),
                         'user_status' => 1,
-
                     ]);
 
                     $customerParticipant = new CustomerParticipant;

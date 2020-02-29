@@ -28,7 +28,7 @@ class AuthController
             return route('login');
         }
 
-        if(!$user->customer())
+        if($user->user_level == 'admin' && !$user->customer())
         {
             session()->set('error','Akun anda sedang tidak aktif.');
             session()->set('old_email',$request->user_login);

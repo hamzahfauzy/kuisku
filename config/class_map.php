@@ -26,6 +26,7 @@ return [
 
     'PHPMailer\PHPMailer\PHPMailer' => 'system/vendor/PHPMailer/src/PHPMailer',
     'PHPMailer\PHPMailer\SMTP'      => 'system/vendor/PHPMailer/src/SMTP',
+    'PHPMailer\PHPMailer\Exception' => 'system/vendor/PHPMailer/src/Exception',
     'SpreadsheetReader'             => 'system/vendor/spreadsheet-reader/SpreadsheetReader',
 
 ];

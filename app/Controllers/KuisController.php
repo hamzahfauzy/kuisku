@@ -3,6 +3,8 @@ namespace App\Controllers;
 use App\Models\{Kuis,Sesi,Soal,Participant,ParticipantSession,SesiUser,ExamQuestion,ExamAnswer};
 use App\Models\CustomerParticipant;
 use PostMeta;
+use ZMail;
+use TemplatePartial;
 
 class KuisController
 {
@@ -123,11 +125,26 @@ class KuisController
     function sesiJadiPeserta()
     {
         $request = request()->post();
+
         $sesiUser = new SesiUser;
-        $sesiUser->save([
+        $sesiUserId = $sesiUser->save([
             'post_id' => $request->sesi_id,
             'user_id' => $request->user_id,
         ]);
+
+        $sesiUser = SesiUser::where('id',$sesiUserId)->first();
+
+        $mail = new ZMail;
+
+        ob_start();
+        new TemplatePartial([
+            'data' => $sesiUser
+        ],"mail-template/notif-participant");
+        $message = ob_get_clean();
+
+        $send = $mail->send($sesiUser->user()->user_email,"Informasi Jadwal Ujian",$message);
+        if($send != 1)
+            return ['status' => false, 'message' => $send];
 
         return ['status' => 1];
     }

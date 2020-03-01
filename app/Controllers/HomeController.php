@@ -88,7 +88,7 @@ class HomeController
                 
                 $user    = session()->user();
                 $user->customer();
-                $logo    = CustomerLogo::where('customer_id',$user->customer->id)->first();
+                $logo    = CustomerLogo::where('customer_id',$user->customer->customer_id)->first();
                 if($logo)
                 {
                     $logo->save([
@@ -100,7 +100,7 @@ class HomeController
 
                     $logo    = new CustomerLogo;
                     $logo->save([
-                        'customer_id' => $user->customer->id,
+                        'customer_id' => $user->customer->customer_id,
                         'file_url'    => $file_url
                     ]);
                 }

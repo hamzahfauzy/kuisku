@@ -84,7 +84,6 @@ class SoalController
             $validate = [
                 'post_parent_id' => ['required'],
                 'post_content'   => ['required'],
-                'skor'           => ['required']
             ];
 
             $data = (array) $request;

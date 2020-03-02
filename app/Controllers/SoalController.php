@@ -4,6 +4,7 @@ use App\Models\{Soal,Jawaban};
 use Category;
 use PostMeta;
 use CategoryPost;
+use CategoryUser;
 
 class SoalController
 {

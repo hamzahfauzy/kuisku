@@ -86,9 +86,9 @@ class HomeController
                 move_uploaded_file($file, 'uploads/' . $new_image_name);
                 $file_url = base_url().'/uploads/' . $new_image_name;
                 
-                $user    = session()->user();
-                $user->customer();
-                $logo    = CustomerLogo::where('customer_id',$user->customer->customer_id)->first();
+                $user     = session()->user();
+                $customer = session()->user()->customer();
+                $logo     = CustomerLogo::where('customer_id',$customer->id)->first();
                 if($logo)
                 {
                     $logo->save([
@@ -100,7 +100,7 @@ class HomeController
 
                     $logo    = new CustomerLogo;
                     $logo->save([
-                        'customer_id' => $user->customer->customer_id,
+                        'customer_id' => $customer->id,
                         'file_url'    => $file_url
                     ]);
                 }

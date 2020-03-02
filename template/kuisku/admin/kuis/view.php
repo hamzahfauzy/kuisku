@@ -8,6 +8,7 @@ $this->js = [
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
+<input type="file" name="file" id="import_file" accept=".csv,.xls,.xlsx" onchange="importParticipant(this)" style="display:none;">
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
@@ -21,7 +22,8 @@ $this->js = [
                 <div class="table-panel">
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus fa-fw"></i> Tambah Sesi</button>
-                        <button class="btn btn-success" onclick="fetchSoal()" data-toggle="modal" data-target="#modalSoal"><i class="fa fa-file-code-o fa-fw"></i> Soal</button>
+                        <button class="btn btn-success" onclick="fetchKategori()" data-toggle="modal" data-target="#modalKategori"><i class="fa fa-list fa-fw"></i> Kategori Soal</button>
+                        <button class="btn btn-danger" onclick="import_file.click()"><i class="fa fa-upload"></i> Import Peserta</button>
                         <a href="<?= route('admin/kuis/view/'.$kuis->id.'/scoreboard') ?>" class="btn btn-warning"><i class="fa fa-file-text fa-fw"></i> Scoreboard</a>
                     </div>
                     <div class="panel-content not-grow">
@@ -221,6 +223,36 @@ $this->js = [
   </div>
 </div>
 
+<!-- Modal Kategori Soal -->
+<div class="modal fade" id="modalKategori" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Kategori Soal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="<?= route('admin/kuis/save-category') ?>" onsubmit="saveCategory(this)">
+      <input type="hidden" name="kuis_id" value="<?= $kuis->id ?>">
+      <div class="modal-body">
+        <table class="table table-bordered table-striped table-kategori">
+            <tbody>
+                <tr>
+                    <td><i>Tidak ada data!</i></td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success"><i class="fa fa-save"></i> Simpan</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-close"></i> Tutup</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script async defer>
 var dataKuis   = {};
 var dataSoal   = {};
@@ -377,10 +409,7 @@ async function fetchPeserta(id)
 
     var no = 1;
 
-    var waktu_mulai   = new Date(response.sesi.waktu_mulai)
-    var waktu_selesai = new Date(response.sesi.waktu_selesai)
-    var now           = new Date(response.sesi.now)
-    if(now < waktu_mulai)
+    if(response.sesi.waktu_mulai == 0 && response.sesi.waktu_selesai == 0)
     {
         response.sesi.peserta.forEach(val => {
             $('.table-peserta > tbody').append(`<tr>
@@ -408,25 +437,57 @@ async function fetchPeserta(id)
     }
     else
     {
-        response.sesi.peserta.forEach(val => {
-            $('.table-peserta > tbody').append(`<tr>
-                <td>
-                    <b>${val.user.user_name}</b>
-                    <br>
-                    ${val.user.user_email}
-                </td>
-            </tr>`)
-        })
+        var waktu_mulai   = new Date(response.sesi.waktu_mulai)
+        var waktu_selesai = new Date(response.sesi.waktu_selesai)
+        var now           = new Date(response.sesi.now)
+        if(now < waktu_mulai)
+        {
+            response.sesi.peserta.forEach(val => {
+                $('.table-peserta > tbody').append(`<tr>
+                    <td>
+                        <b>${val.user.user_name}</b>
+                        <br>
+                        ${val.user.user_email}
+                        <br>
+                        <a href="javascript:void(0)" onclick="batalkanPeserta(${id},${val.user.id},this)" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
+                    </td>
+                </tr>`)
+            })
 
-        response.exclude.forEach(val => {
-            $('.table-calon-peserta > tbody').append(`<tr>
-                <td>
-                    <b>${val.user_name}</b>
-                    <br>
-                    ${val.user_email}
-                </td>
-            </tr>`)
-        })
+            response.exclude.forEach(val => {
+                $('.table-calon-peserta > tbody').append(`<tr>
+                    <td>
+                        <b>${val.user_name}</b>
+                        <br>
+                        ${val.user_email}
+                        <br>
+                        <a href="javascript:void(0)" onclick="jadikanPeserta(${id},${val.id},this)" class="act-btn jawab-btn"><i class="fa fa-arrow-right"></i> Jadikan Peserta</a>
+                    </td>
+                </tr>`)
+            })
+        }
+        else
+        {
+            response.sesi.peserta.forEach(val => {
+                $('.table-peserta > tbody').append(`<tr>
+                    <td>
+                        <b>${val.user.user_name}</b>
+                        <br>
+                        ${val.user.user_email}
+                    </td>
+                </tr>`)
+            })
+
+            response.exclude.forEach(val => {
+                $('.table-calon-peserta > tbody').append(`<tr>
+                    <td>
+                        <b>${val.user_name}</b>
+                        <br>
+                        ${val.user_email}
+                    </td>
+                </tr>`)
+            })
+        }
     }
 }
 
@@ -486,35 +547,54 @@ function fetchToTable(data = false)
     var no = 1;
     data.forEach(val => {
 
-        var waktu_mulai   = new Date(val.waktu_mulai)
-        var waktu_selesai = new Date(val.waktu_selesai)
-        var now           = new Date(val.now)
-
-        if(now < waktu_mulai)
-        $('.table-kuis > tbody').append(`<tr>
-            <td width="10px">${no++}</td>
-            <td>
-                <b>${val.post_title}</b>
-                <br>
-                Mulai : ${val.waktu_mulai}<br>
-                Selesai : ${val.waktu_selesai}<br>
-                <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
-                <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
-                <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
-            </td>
-        </tr>`)
+        if(val.waktu_mulai == 0 && val.waktu_selesai == 0)
+        {
+            $('.table-kuis > tbody').append(`<tr>
+                <td width="10px">${no++}</td>
+                <td>
+                    <b>${val.post_title}</b>
+                    <br>
+                    Mulai : ${val.waktu_mulai}<br>
+                    Selesai : ${val.waktu_selesai}<br>
+                    <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
+                    <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
+                    <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
+                </td>
+            </tr>`)
+        }
         else
-        $('.table-kuis > tbody').append(`<tr>
-            <td width="10px">${no++}</td>
-            <td>
-                <b>${val.post_title}</b>
-                <br>
-                Mulai : ${val.waktu_mulai}<br>
-                Selesai : ${val.waktu_selesai}<br>
-                <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
-                <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
-            </td>
-        </tr>`)
+        {
+
+            var waktu_mulai   = new Date(val.waktu_mulai)
+            var waktu_selesai = new Date(val.waktu_selesai)
+            var now           = new Date(val.now)
+
+            if(now < waktu_mulai)
+            $('.table-kuis > tbody').append(`<tr>
+                <td width="10px">${no++}</td>
+                <td>
+                    <b>${val.post_title}</b>
+                    <br>
+                    Mulai : ${val.waktu_mulai}<br>
+                    Selesai : ${val.waktu_selesai}<br>
+                    <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
+                    <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
+                    <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
+                </td>
+            </tr>`)
+            else
+            $('.table-kuis > tbody').append(`<tr>
+                <td width="10px">${no++}</td>
+                <td>
+                    <b>${val.post_title}</b>
+                    <br>
+                    Mulai : ${val.waktu_mulai}<br>
+                    Selesai : ${val.waktu_selesai}<br>
+                    <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
+                    <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
+                </td>
+            </tr>`)
+        }
     })
 }
 
@@ -629,6 +709,106 @@ function filterKuis(keyword)
     })
 
     fetchToTable(data)
+}
+
+async function fetchKategori()
+{
+    let request = await fetch('<?= route('admin/category/get') ?>')
+    let response = await request.json()
+
+    let request2 = await fetch('<?= route('admin/kuis/category/'.$kuis->id) ?>')
+    let response2 = await request2.json()
+
+    var data = response
+    $('.table-kategori').html('')
+    if(data.length == 0)
+    {
+        $('.table-kategori').html('<tr><td><i>Tidak ada data!</i></td></tr>')
+    }
+
+    data.forEach(val => {
+        var category = response2.find(cat => cat.category_id === val.id)
+        category = category && category.jumlah_soal ? category.jumlah_soal : 0
+        $('.table-kategori').append(`<tr>
+            <td>
+                <b>${val.category_name}</b>
+                <p>${val.category_description}</p>
+            </td>
+            <td>
+                <div class="form-group">
+                    <label>Jumlah Soal</label>
+                    <input type="number" min="0" value="${category}" name="category_setting[${val.id}]" id="category_setting_${val.id}" class="form-control">
+                </div>
+            </td>
+        </tr>`)
+    })
+}
+
+async function saveCategory(form)
+{
+    event.preventDefault()
+    var data = $(form).serialize()
+    data = decodeURI(data)
+    let request = await fetch($(form).attr('action'), {
+        method: 'post',
+        body: data,
+        headers: { 'Content-type': 'application/x-www-form-urlencoded' }
+    })
+
+    let response = await request.json()
+    Swal.fire(
+        'Saved!',
+        'Kategori berhasil disimpan.',
+        'success'
+    )
+}
+
+async function importParticipant(el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengimport data peserta ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            var data = new FormData()
+            data.append('id', '<?= $kuis->id ?>')
+            data.append('file', el.files[0])
+
+            let request = await fetch('<?= route('admin/kuis/import-participant') ?>',{
+                method :'POST',
+                body   : data,
+            })
+
+            el.value = ''
+
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat validasi</a>'
+                })
+            }
+            else
+            {
+                Swal.fire(
+                    'Imported!',
+                    'Peserta Berhasil di import.',
+                    'success'
+                )
+
+                loadData()
+            }
+        }
+    })
 }
 
 loadData()

@@ -170,6 +170,30 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/category/insert' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@insert',
+        'return'   => 'json'
+    ],
+
+    'admin/category/update' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@update',
+        'return'   => 'json'
+    ],
+
+    'admin/category/find/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@find',
+        'return'   => 'json'
+    ],
+
+    'admin/category/delete' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@delete',
+        'return'   => 'json'
+    ],
+
     'admin/question' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@index',
@@ -314,6 +338,18 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/kuis/save-category' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@saveCategory',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/category/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@getCategory',
+        'return'   => 'json'
+    ],
+
     'admin/kuis/sesi/get/{id}' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@getSesi',
@@ -371,6 +407,12 @@ return [
     'admin/kuis/participant/{id}' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@participant',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/import-participant' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@importParticipant',
         'return'   => 'json'
     ],
 

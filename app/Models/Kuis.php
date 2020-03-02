@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use Post;
+use PostMeta;
 
 class Kuis extends Post
 {

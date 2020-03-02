@@ -178,19 +178,19 @@ var dataSoal   = {};
 var dataAnswer = {};
 
 CKEDITOR.replace( 'editor', {
-  height: 300,
+  height: 150,
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
 
 CKEDITOR.replace( 'editor2', {
-  height: 300,
+  height: 150,
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
 
 CKEDITOR.replace( 'editor3' , {
-  height: 300,
+  height: 100,
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
@@ -360,7 +360,7 @@ function fetchToTable(data = false)
     var no = 1;
     data.forEach(val => {
         var categories = val.categories.map(e => e.category.category_name ).join(', ')
-        var answer = "<ul>"
+        var answer = `<ul>`
         val.answers.forEach(val => {
             answer += `<li>${val.post_content}</li>`
         })
@@ -373,12 +373,15 @@ function fetchToTable(data = false)
                     <i class="fa fa-tag"></i> ${categories}
                 </div>
                 <br>
-                <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-eye"></i> Jawaban</a> |
+                <a href="javascript:void(0)" onclick="toggleJawaban(${val.id})" class="act-btn" style="color:orange"><i class="fa fa-eye"></i> Tampil Jawaban</a> |
+                <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-cog"></i> Manajemen Jawaban</a> |
                 <a href="javascript:void(0)" onclick="fetchEditSoal(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deleteSoal(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
                 <hr>
+                <div class="jawaban-${val.id}" style='display:none'>
                 <b>Jawaban</b>
                 ${answer}
+                </div>
             </td>
         </tr>`)
     })
@@ -572,6 +575,15 @@ function filterSoal(keyword)
     })
 
     fetchToTable(data)
+}
+
+function toggleJawaban(id)
+{
+    var status = document.querySelector('.jawaban-'+id).style.display
+    if(status == 'none')
+        document.querySelector('.jawaban-'+id).style.display = 'block'
+    else
+        document.querySelector('.jawaban-'+id).style.display = 'none'
 }
 
 loadData()

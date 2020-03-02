@@ -17,6 +17,7 @@ return [
 
     'Category'       => 'system/models/Category',
     'CategoryPost'   => 'system/models/CategoryPost',
+    'CategoryUser'   => 'system/models/CategoryUser',
     'Comment'        => 'system/models/Comment',
     'Page'           => 'system/models/Page',
     'Post'           => 'system/models/Post',

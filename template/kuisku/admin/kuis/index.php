@@ -61,6 +61,10 @@ $this->js = [
                 <label for="description">Deskripsi</label>
                 <textarea name="description" rows="10" id="description" class="form-control editor"></textarea>
             </div>
+            <div class="form-group">
+                <label for="max_participant">Jumlah Peserta Per Sesi</label>
+                <input type="number" name="max_participant" id="max_participant" class="form-control" required min="0">
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -92,6 +96,10 @@ $this->js = [
                 <label for="description">Deskripsi</label>
                 <textarea name="description" id="description" class="form-control editor2"></textarea>
             </div>
+            <div class="form-group">
+                <label for="max_participant">Jumlah Peserta Per Sesi</label>
+                <input type="number" name="max_participant" id="max_participant" class="form-control" required min="0">
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -118,6 +126,7 @@ async function simpanKuis()
     var data = {
         post_title:$('#addKuisForm').find('#title').val(),
         post_content:$('#addKuisForm').find('#description').val(),
+        max_participant:$('#addKuisForm').find('#max_participant').val(),
     }
 
     let request = await fetch('<?= route('admin/kuis/insert') ?>',{
@@ -161,6 +170,7 @@ async function fetchEditKuis(id)
     $('#editKuisForm').find('#id').val(response.id)
     $('#editKuisForm').find('#title').val(response.post_title)
     $('#editKuisForm').find('#description').val(response.post_content)
+    $('#editKuisForm').find('#max_participant').val(response.max_participant)
 }
 
 async function editKuis()
@@ -169,6 +179,7 @@ async function editKuis()
         id:$('#editKuisForm').find('#id').val(),
         post_title:$('#editKuisForm').find('#title').val(),
         post_content:$('#editKuisForm').find('#description').val(),
+        max_participant:$('#editKuisForm').find('#max_participant').val(),
     }
 
     let request = await fetch('<?= route('admin/kuis/update') ?>',{
@@ -221,6 +232,7 @@ function fetchToTable(data = false)
             <td>
                 <b>${val.post_title}</b>
                 <br>
+                Jumlah Max. Peserta : ${val.max_participant ? val.max_participant : '-'} <br>
                 <a href="<?= base_url() ?>/admin/kuis/view/${val.id}" class="act-btn jawaban-btn"><i class="fa fa-eye"></i> Detail</a> |
                 <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>

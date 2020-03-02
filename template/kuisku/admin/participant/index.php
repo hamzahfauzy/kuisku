@@ -8,9 +8,6 @@ $this->js = [
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
-<form action="<?= route('admin/participant/import') ?>" id="formImport" method="post" enctype="multipart/form-data" style="display:none;">
-<input type="file" name="file" id="import_file" accept=".csv,.xls,.xlsx" onchange="formImport.submit()">
-</form>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
@@ -24,7 +21,6 @@ $this->js = [
                 <div class="table-panel">
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus"></i> Tambah</button>
-                        <button class="btn btn-success" onclick="import_file.click()"><i class="fa fa-upload"></i> Import</button>
                     </div>
                     <div class="panel-content not-grow">
                         <div class="form-inline">
@@ -79,6 +75,10 @@ $this->js = [
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="no_hp">No. Handphone</label>
+                <input type="tel" name="no_hp" id="no_hp" class="form-control" required>
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -124,6 +124,10 @@ $this->js = [
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="no_hp">No. Handphone</label>
+                <input type="tel" name="no_hp" id="no_hp" class="form-control" required>
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -165,6 +169,7 @@ async function simpanPeserta()
         user_name:$('#addParticipantForm').find('#name').val(),
         user_email:$('#addParticipantForm').find('#email').val(),
         user_pass:$('#addParticipantForm').find('#password').val(),
+        no_hp:$('#addParticipantForm').find('#no_hp').val(),
     }
 
     let request = await fetch('<?= route('admin/participant/insert') ?>',{
@@ -211,6 +216,7 @@ async function fetchEditPeserta(id)
     $('#editParticipantForm').find('#id').val(response.id)
     $('#editParticipantForm').find('#name').val(response.user_name)
     $('#editParticipantForm').find('#email').val(response.user_email)
+    $('#editParticipantForm').find('#no_hp').val(response.no_hp)
 }
 
 async function editPeserta()
@@ -220,6 +226,7 @@ async function editPeserta()
         user_name:$('#editParticipantForm').find('#name').val(),
         user_email:$('#editParticipantForm').find('#email').val(),
         user_pass:$('#editParticipantForm').find('#password').val(),
+        no_hp:$('#editParticipantForm').find('#no_hp').val(),
     }
 
     let request = await fetch('<?= route('admin/participant/update') ?>',{
@@ -272,6 +279,8 @@ function fetchToTable(data = false)
                 <br>
                 ${val.user_email}
                 <br>
+                ${val.no_hp}
+                <br>
                 <a href="javascript:void(0)" onclick="fetchEditPeserta(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deletePeserta(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
@@ -287,6 +296,7 @@ async function fetchEditPeserta(id)
     $('#editParticipantForm').find('#id').val(response.id)
     $('#editParticipantForm').find('#name').val(response.user_name)
     $('#editParticipantForm').find('#email').val(response.user_email)
+    $('#editParticipantForm').find('#no_hp').val(response.no_hp)
 }
 
 async function deletePeserta(id)

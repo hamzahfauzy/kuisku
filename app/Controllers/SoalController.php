@@ -15,7 +15,11 @@ class SoalController
             $question->categories();
             $question->answers();
         }
-        $categories = Category::get();
+        
+        $category_user = CategoryUser::where('user_id',session()->user()->id)->get();
+        $categories = [];
+        foreach($category_user as $category)
+            $categories[] = $category->category();
         return ['questions' => $questions, 'categories' => $categories];
     }
 

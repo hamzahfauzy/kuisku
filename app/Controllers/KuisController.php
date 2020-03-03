@@ -489,7 +489,7 @@ class KuisController
                         'user_name'   => $row[1],
                         'user_email'  => $email,
                         'user_login'  => $email,
-                        'user_pass'   => md5($password),
+                        'user_pass'   => md5($password), 
                         'user_status' => 1,
                     ]);
 

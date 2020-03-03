@@ -130,26 +130,17 @@ class KuisController
     function sesiJadiPeserta()
     {
         $request = request()->post();
+        $sesi = Sesi::find($request->sesi_id);
+        $kuis = Kuis::find($sesi->post_parent_id);
+
+        if(count($sesi->peserta()) == $kuis->meta('max_participant'))
+            return ['status' => false];
 
         $sesiUser = new SesiUser;
         $sesiUserId = $sesiUser->save([
             'post_id' => $request->sesi_id,
             'user_id' => $request->user_id,
         ]);
-
-        // $sesiUser = SesiUser::where('id',$sesiUserId)->first();
-
-        // $mail = new ZMail;
-
-        // ob_start();
-        // new TemplatePartial([
-        //     'data' => $sesiUser
-        // ],"mail-template/notif-participant");
-        // $message = ob_get_clean();
-
-        // $send = $mail->send($sesiUser->user()->user_email,"Informasi Jadwal Ujian",$message);
-        // if($send != 1)
-        //     return ['status' => false, 'message' => $send];
 
         return ['status' => 1];
     }
@@ -492,117 +483,130 @@ class KuisController
             $ret = [];
             $customer = session()->user()->customer();
             $Reader->ChangeSheet(0);
-            foreach($Reader as $key => $row)
+
+            $customer = session()->user()->customer();
+            $subscription_active = $customer->subscription_active();
+            if($subscription_active)
             {
-                if($key == 0) continue;
-                $email = $row[2];
-                $no_hp = $row[3];
-                $no_hp = str_replace("'",'',$no_hp);
-                $no_hp = str_replace(" ","",$no_hp);
-                $user_checker = User::where('user_email',$email)->where('user_level','!=','participant')->first();
-                    
-                if($user_checker)
-                    continue;
+                $product = $subscription_active->product();
+                $participants = CustomerParticipant::where('customer_id',$customer->id)->get();
+                $count_imported = count($Reader);
+                if(count($participants)+$count_imported > $product->limit_peserta)
+                    return ['status'=>false,'message'=>'Jumlah peserta sudah melewati batas'];
 
-                $_participant = Participant::where('user_email',$email)->first();
-                if(!$_participant)
+                foreach($Reader as $key => $row)
                 {
-                    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    $password = substr(str_shuffle($chars),0,10);
-                    $participant = new Participant;
-                    $participant_id = $participant->save([
-                        'user_name'   => $row[1],
-                        'user_email'  => $email,
-                        'user_login'  => $email,
-                        'user_pass'   => md5($password), 
-                        'user_status' => 1,
-                    ]);
+                    if($key == 0) continue;
+                    $email = $row[2];
+                    $no_hp = $row[3];
+                    $no_hp = str_replace("'",'',$no_hp);
+                    $no_hp = str_replace(" ","",$no_hp);
+                    $user_checker = User::where('user_email',$email)->where('user_level','!=','participant')->first();
+                        
+                    if($user_checker)
+                        continue;
 
-                    $user_meta = new UserMeta;
-                    $user_meta->save([
-                        'user_id'    => $participant_id,
-                        'meta_key'   => 'no_hp',
-                        'meta_value' => $no_hp
-                    ]);
-
-                    $customerParticipant = new CustomerParticipant;
-                    $customerParticipant->save([
-                        'customer_id' => $customer->id,
-                        'participant_id' => $participant_id
-                    ]);
-
-                    $ret[$participant_id] = [
-                        'participant_id' => $participant_id,
-                        'nama'  => $row[1],
-                        'email' => $email,
-                        'no_hp' => $no_hp,
-                    ];
-                }
-                else
-                {
-                    $participant_id = $_participant->id;
-                    $_customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$participant_id)->first();
-                    if(!$_customerParticipant)
+                    $_participant = Participant::where('user_email',$email)->first();
+                    if(!$_participant)
                     {
+                        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                        $password = substr(str_shuffle($chars),0,10);
+                        $participant = new Participant;
+                        $participant_id = $participant->save([
+                            'user_name'   => $row[1],
+                            'user_email'  => $email,
+                            'user_login'  => $email,
+                            'user_pass'   => md5($password), 
+                            'user_status' => 1,
+                        ]);
+
+                        $user_meta = new UserMeta;
+                        $user_meta->save([
+                            'user_id'    => $participant_id,
+                            'meta_key'   => 'no_hp',
+                            'meta_value' => $no_hp
+                        ]);
+
                         $customerParticipant = new CustomerParticipant;
                         $customerParticipant->save([
                             'customer_id' => $customer->id,
                             'participant_id' => $participant_id
                         ]);
+
+                        $ret[$participant_id] = [
+                            'participant_id' => $participant_id,
+                            'nama'  => $row[1],
+                            'email' => $email,
+                            'no_hp' => $no_hp,
+                        ];
                     }
-                    $ret[$participant_id] = [
-                        'participant_id' => $participant_id,
-                        'nama'  => $row[1],
-                        'email' => $email,
-                        'no_hp' => $no_hp,
-                    ];
+                    else
+                    {
+                        $participant_id = $_participant->id;
+                        $_customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$participant_id)->first();
+                        if(!$_customerParticipant)
+                        {
+                            $customerParticipant = new CustomerParticipant;
+                            $customerParticipant->save([
+                                'customer_id' => $customer->id,
+                                'participant_id' => $participant_id
+                            ]);
+                        }
+                        $ret[$participant_id] = [
+                            'participant_id' => $participant_id,
+                            'nama'  => $row[1],
+                            'email' => $email,
+                            'no_hp' => $no_hp,
+                        ];
+                    }
                 }
-            }
 
-            $all_sesi = Kuis::where('id',$request->id)->where('post_author_id',session()->get('id'))->first();
-            foreach($all_sesi->sesi() as $_sesi){
-                foreach($_sesi->peserta() as $_p)
-                {
-                    unset($ret[$_p->user()->id]);
+                $all_sesi = Kuis::where('id',$request->id)->where('post_author_id',session()->get('id'))->first();
+                foreach($all_sesi->sesi() as $_sesi){
+                    foreach($_sesi->peserta() as $_p)
+                    {
+                        unset($ret[$_p->user()->id]);
+                    }
                 }
-            }
 
-            if(empty($ret)) return ['status' => true];
+                if(empty($ret)) return ['status' => true];
 
-            $kuis = Kuis::find($request->id);
-            $max_participant = $kuis->meta('max_participant');
-            $pembagian_jumlah_sesi = ceil(count($ret) / $max_participant);
-            $sisa_pembagian = count($ret) % $max_participant;
-            if($sisa_pembagian) $pembagian_jumlah_sesi += 1;
-            $partitions = array_chunk($ret,$pembagian_jumlah_sesi,true);
-            foreach($partitions as $key => $partition)
-            {
-                $no = $key+1;
-                $title = "Sesi ".$no;
-                $kuis = new Sesi;
-                $sesi_id = $kuis->save([
-                    'post_author_id' => session()->get('id'),
-                    'post_title'     => $title,
-                    'post_content'   => $title,
-                    'post_excerpt'   => $title,
-                    'post_status'    => 0,
-                    'post_parent_id' => $request->id,
-                    'post_as'        => 'sesi',
-                    'post_date'      => 'CURRENT_TIMESTAMP',
-                    'post_modified'  => 'CURRENT_TIMESTAMP',
-
-                ]);
-
-                foreach($partition as $participant)
+                $kuis = Kuis::find($request->id);
+                $max_participant = $kuis->meta('max_participant');
+                $pembagian_jumlah_sesi = ceil(count($ret) / $max_participant);
+                $sisa_pembagian = count($ret) % $max_participant;
+                if($sisa_pembagian) $pembagian_jumlah_sesi += 1;
+                $partitions = array_chunk($ret,$pembagian_jumlah_sesi,true);
+                foreach($partitions as $key => $partition)
                 {
-                    $sesiUser = new SesiUser;
-                    $sesiUserId = $sesiUser->save([
-                        'post_id' => $sesi_id,
-                        'user_id' => $participant['participant_id'],
+                    $no = $key+1;
+                    $title = "Sesi ".$no;
+                    $kuis = new Sesi;
+                    $sesi_id = $kuis->save([
+                        'post_author_id' => session()->get('id'),
+                        'post_title'     => $title,
+                        'post_content'   => $title,
+                        'post_excerpt'   => $title,
+                        'post_status'    => 0,
+                        'post_parent_id' => $request->id,
+                        'post_as'        => 'sesi',
+                        'post_date'      => 'CURRENT_TIMESTAMP',
+                        'post_modified'  => 'CURRENT_TIMESTAMP',
+
                     ]);
+
+                    foreach($partition as $participant)
+                    {
+                        $sesiUser = new SesiUser;
+                        $sesiUserId = $sesiUser->save([
+                            'post_id' => $sesi_id,
+                            'user_id' => $participant['participant_id'],
+                        ]);
+                    }
                 }
+                return ['status'=>true];
             }
-            return ['status'=>true];
+            return ['status'=>false];
         }
     }
 

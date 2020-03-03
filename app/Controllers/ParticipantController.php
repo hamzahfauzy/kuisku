@@ -82,71 +82,79 @@ class ParticipantController
     function insert()
     {
         $request = request()->post();
-        if($request)
+        $customer = session()->user()->customer();
+        $subscription_active = $customer->subscription_active();
+        if($subscription_active)
         {
-            $customer = session()->user()->customer();
-
-            $validate = [
-                'user_name'   => ['required'],
-                'user_email'  => ['required'],
-                'user_pass'   => ['required'],
-                'no_hp'       => ['required'],
-            ];
-
-            $data = (array) $request;
-            $user_checker = User::where('user_email',$request->user_email)->first();
-            if($user_checker)
-                return ['status' => false,'msg'=>'Username exists with different role'];
-            $_participant = Participant::where('user_email',$request->user_email)->first();
-            if(!$_participant)
-                if(count(request()->validate($data, $validate)) == 0)
-                {
-                    $participant = new Participant;
-                    $participant_id = $participant->save([
-                        'user_name'   => $request->user_name,
-                        'user_email'  => $request->user_email,
-                        'user_login'  => $request->user_email,
-                        'user_pass'   => md5($request->user_pass),
-                        'user_status' => 1,
-                    ]);
-
-                    $user_meta = new UserMeta;
-                    $user_meta->save([
-                        'user_id'    => $participant_id,
-                        'meta_key'   => 'no_hp',
-                        'meta_value' => $request->no_hp
-                    ]);
-
-                    $customerParticipant = new CustomerParticipant;
-                    $customerParticipant->save([
-                        'customer_id' => $customer->id,
-                        'participant_id' => $participant_id
-                    ]);
-
-                    return $this->index();
-
-                }
-                else
-                    return ['status' => false];
-            else
+            $product = $subscription_active->product();
+            $participants = CustomerParticipant::where('customer_id',$customer->id)->get();
+            if(count($participants)+1 > $product->limit_peserta)
+                return ['status'=>false,'message'=>'Jumlah peserta sudah melewati batas'];
+            if($request)
             {
-                $participant_id = $_participant->id;
-                $_customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$participant_id)->first();
-                if($_customerParticipant)
-                    return ['status' => false];
+                $customer = session()->user()->customer();
+
+                $validate = [
+                    'user_name'   => ['required'],
+                    'user_email'  => ['required'],
+                    'user_pass'   => ['required'],
+                    'no_hp'       => ['required'],
+                ];
+
+                $data = (array) $request;
+                $user_checker = User::where('user_email',$request->user_email)->first();
+                if($user_checker)
+                    return ['status' => false,'msg'=>'Username exists with different role'];
+                $_participant = Participant::where('user_email',$request->user_email)->first();
+                if(!$_participant)
+                    if(count(request()->validate($data, $validate)) == 0)
+                    {
+                        $participant = new Participant;
+                        $participant_id = $participant->save([
+                            'user_name'   => $request->user_name,
+                            'user_email'  => $request->user_email,
+                            'user_login'  => $request->user_email,
+                            'user_pass'   => md5($request->user_pass),
+                            'user_status' => 1,
+                        ]);
+
+                        $user_meta = new UserMeta;
+                        $user_meta->save([
+                            'user_id'    => $participant_id,
+                            'meta_key'   => 'no_hp',
+                            'meta_value' => $request->no_hp
+                        ]);
+
+                        $customerParticipant = new CustomerParticipant;
+                        $customerParticipant->save([
+                            'customer_id' => $customer->id,
+                            'participant_id' => $participant_id
+                        ]);
+
+                        return $this->index();
+
+                    }
+                    else
+                        return ['status' => false];
                 else
                 {
-                    $customerParticipant = new CustomerParticipant;
-                    $customerParticipant->save([
-                        'customer_id' => $customer->id,
-                        'participant_id' => $participant_id
-                    ]);
+                    $participant_id = $_participant->id;
+                    $_customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$participant_id)->first();
+                    if($_customerParticipant)
+                        return ['status' => false];
+                    else
+                    {
+                        $customerParticipant = new CustomerParticipant;
+                        $customerParticipant->save([
+                            'customer_id' => $customer->id,
+                            'participant_id' => $participant_id
+                        ]);
 
-                    return $this->index();
+                        return $this->index();
+                    }
                 }
             }
         }
-
         return ['status' => false];
     }
 

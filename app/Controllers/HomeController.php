@@ -3,6 +3,7 @@ namespace App\Controllers;
 use User;
 use Page;
 use Category;
+use CategoryUser;
 use App\Models\{Soal,Kuis,Participant,CustomerLogo};
 
 class HomeController
@@ -33,7 +34,7 @@ class HomeController
             $soal = Soal::where('post_author_id',$user->id)->count();
             $kuis = Kuis::where('post_author_id',$user->id)->count();
             $peserta = count($customer->participants());
-            $kategori = Category::count();
+            $kategori = CategoryUser::where('user_id',$user->id)->count();
             $total = $soal+$kuis+$peserta+$kategori;
             return [
                 'soal' => $soal, 

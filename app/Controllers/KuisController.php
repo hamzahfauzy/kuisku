@@ -472,8 +472,8 @@ class KuisController
                 if($key == 0) continue;
                 $email = $row[2];
                 $no_hp = $row[3];
-                $no_hp = str_replace("+62",'0',$no_hp);
                 $no_hp = str_replace("'",'',$no_hp);
+                $no_hp = str_replace(" ","",$no_hp);
                 $user_checker = User::where('user_email',$email)->where('user_level','!=','participant')->first();
                     
                 if($user_checker)

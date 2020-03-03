@@ -419,6 +419,7 @@ async function fetchPeserta(id)
                     ${val.user.user_email}
                     <br>
                     <a href="javascript:void(0)" onclick="batalkanPeserta(${id},${val.user.id},this)" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
+                    <a href="javascript:void(0)" onclick="kirimNotifikasi(${id},${val.user.id},this)" class="act-btn jawab-btn"><i class="fa fa-send"></i> Kirim Notifikasi</a>
                 </td>
             </tr>`)
         })
@@ -450,6 +451,7 @@ async function fetchPeserta(id)
                         ${val.user.user_email}
                         <br>
                         <a href="javascript:void(0)" onclick="batalkanPeserta(${id},${val.user.id},this)" class="act-btn delete-btn"><i class="fa fa-close"></i> Batal</a>
+                        <a href="javascript:void(0)" onclick="kirimNotifikasi(${id},${val.user.id},this)" class="act-btn jawab-btn"><i class="fa fa-send"></i> Kirim Notifikasi</a>
                     </td>
                 </tr>`)
             })
@@ -672,6 +674,52 @@ async function batalkanPeserta(sesi_id, user_id, el)
     })
     let response = await request.json()
     fetchPeserta(sesi_id)
+}
+
+async function kirimNotifikasi(sesi_id, user_id, el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengirim notifikasi kepada peserta ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            el.innerHTML = "Loading..."
+            el.removeAttribute("onclick")
+            let request = await fetch('<?= route('admin/kuis/sesi/notifikasi-peserta') ?>',{
+                method :'POST',
+                headers : {
+                    'Content-Type':'application/json'
+                },
+                body   : JSON.stringify({sesi_id:sesi_id,user_id:user_id}),
+            })
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Notifikasi gagal terkirim!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat pengiriman sms</a>'
+                })
+            }
+            else
+            {
+                Swal.fire(
+                    'Success!',
+                    'Notifikasi Berhasil di kirim.',
+                    'success'
+                )
+
+                fetchPeserta(sesi_id)
+            }
+        }
+    })
 }
 
 async function tambahkanSoal(kuis_id, soal_id)

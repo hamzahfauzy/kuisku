@@ -2,7 +2,7 @@
 namespace App\Controllers;
 use User;
 use UserMeta;
-use ZMail;
+use ZSms;
 use TemplatePartial;
 use SpreadsheetReader;
 use App\Models\{CustomerParticipant, Participant};
@@ -101,19 +101,6 @@ class ParticipantController
             if(!$_participant)
                 if(count(request()->validate($data, $validate)) == 0)
                 {
-
-                    // $mail = new ZMail;
-
-                    // ob_start();
-                    // new TemplatePartial([
-                    //     'data' => $request
-                    // ],"mail-template/add-participant");
-                    // $message = ob_get_clean();
-
-                    // $send = $mail->send($request->user_email,"Pendaftaran Peserta Ujian",$message);
-                    // if($send != 1)
-                    //     return ['status' => false, 'message' => $send];
-
                     $participant = new Participant;
                     $participant_id = $participant->save([
                         'user_name'   => $request->user_name,
@@ -221,6 +208,24 @@ class ParticipantController
         }
 
         return ['status' => false];
+    }
+
+    function notifikasiPeserta()
+    {
+        $request = request()->post();
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $password = substr(str_shuffle($chars),0,10);
+        $participant = Participant::find($request->user_id);
+        $participant->save([
+            'user_pass'   => md5($password), 
+        ]);
+        
+        $message = "Informasi Akun Ujian, website ".route('login').", username: ".$participant->user_login.", password: ".$password;
+
+        $sms = new ZSms;
+        $response = $sms->send($participant->meta('no_hp'),$message);
+
+        return ['status' => 1,'message' => $response];
     }
 
 }

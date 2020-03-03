@@ -290,9 +290,9 @@ return [
         'return'     => 'json'
     ],
 
-    'admin/participant/import' => [
+    'admin/participant/notifikasi-peserta' => [
         'middleware' => 'Admin',
-        'callback'   => 'ParticipantController@import',
+        'callback'   => 'ParticipantController@notifikasiPeserta',
         'return'     => 'json'
     ],
 
@@ -437,6 +437,12 @@ return [
     'admin/kuis/sesi/batal-peserta' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@sesiBatalPeserta',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/sesi/notifikasi-peserta' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@sesiNotifikasiPeserta',
         'return'   => 'json'
     ],
 

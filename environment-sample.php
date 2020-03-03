@@ -12,4 +12,8 @@ return [
     'smtp_password'     => '',
     'smtp_secure'       => 'tls',
     'smtp_port'         => '',
+
+    'zenziva_user'      => '',
+    'zenziva_pass'      => '',
+    'zenziva_url'       => '',
 ];

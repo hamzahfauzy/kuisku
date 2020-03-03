@@ -281,10 +281,57 @@ function fetchToTable(data = false)
                 <br>
                 ${val.no_hp}
                 <br>
+                <a href="javascript:void(0)" onclick="kirimNotifikasi(${val.id},this)" class="act-btn jawab-btn"><i class="fa fa-send"></i> Kirim Notifikasi</a> |
                 <a href="javascript:void(0)" onclick="fetchEditPeserta(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deletePeserta(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
+    })
+}
+
+async function kirimNotifikasi(user_id, el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengirim notifikasi kepada peserta ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            el.innerHTML = "Loading..."
+            el.removeAttribute("onclick")
+            let request = await fetch('<?= route('admin/participant/notifikasi-peserta') ?>',{
+                method :'POST',
+                headers : {
+                    'Content-Type':'application/json'
+                },
+                body   : JSON.stringify({user_id:user_id}),
+            })
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Notifikasi gagal terkirim!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat pengiriman sms</a>'
+                })
+            }
+            else
+            {
+                Swal.fire(
+                    'Success!',
+                    'Notifikasi Berhasil di kirim.',
+                    'success'
+                )
+
+                loadData()
+            }
+        }
     })
 }
 

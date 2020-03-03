@@ -4,7 +4,7 @@ use App\Models\{Kuis,Sesi,Soal,Participant,ParticipantSession,SesiUser,ExamQuest
 use App\Models\CustomerParticipant;
 use PostMeta;
 use UserMeta;
-use ZMail;
+use ZSms;
 use TemplatePartial;
 use SpreadsheetReader;
 use User;
@@ -29,8 +29,8 @@ class KuisController
     function findSesi($id)
     {
         $kuis = Sesi::where('id',$id)->where('post_author_id',session()->get('id'))->first();
-        $kuis->meta->waktu_mulai = $kuis->meta('waktu_mulai');
-        $kuis->meta->waktu_selesai = $kuis->meta('waktu_selesai');
+        $kuis->meta->waktu_mulai = !empty($kuis->meta('waktu_mulai')) ? $kuis->meta('waktu_mulai') : 0;
+        $kuis->meta->waktu_selesai = !empty($kuis->meta('waktu_selesai')) ? $kuis->meta('waktu_selesai') : 0;
         return $kuis;
     }
 
@@ -162,6 +162,31 @@ class KuisController
         SesiUser::delete($sesiUser->id);
 
         return ['status' => 1];
+    }
+
+    function sesiNotifikasiPeserta()
+    {
+        $request = request()->post();
+        $sesiUser = SesiUser::where('post_id',$request->sesi_id)->where('user_id',$request->user_id)->first();
+        $sesi = $sesiUser->sesi();
+        $user = $sesiUser->user();
+        if(empty($sesi->meta('waktu_mulai')))
+            return ['status' => false, 'message' => 'belum ada waktu mulai dan selesai'];
+        $waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai')).":00";
+        $waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai')).":00";
+        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $password = substr(str_shuffle($chars),0,10);
+        $participant = Participant::find($sesiUser->user_id);
+        $participant->save([
+            'user_pass'   => md5($password), 
+        ]);
+        
+        $message = "Informasi Ujian, website ".route('login').", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
+
+        $sms = new ZSms;
+        $response = $sms->send($user->meta('no_hp'),$message);
+
+        return ['status' => 1,'message' => $response];
     }
 
     function tambahSoal()
@@ -483,7 +508,7 @@ class KuisController
                 if(!$_participant)
                 {
                     $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    $password = substr(str_shuffle($chars),0,$length);
+                    $password = substr(str_shuffle($chars),0,10);
                     $participant = new Participant;
                     $participant_id = $participant->save([
                         'user_name'   => $row[1],

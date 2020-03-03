@@ -32,7 +32,7 @@
                     <div class="exam-options row">
                         <?php foreach($s->answers() as $answer): ?>
                         <div class="inputGroup col-sm-12 col-md-6">
-                            <input onchange="sendAnswer(<?=$answer->id?>,<?=$s->id?>)" id="radio<?=$answer->id?>" name="answers[<?=$s->id?>]" type="radio" value="<?= $answer->id ?>" <?= $answer->id == $answered->post_answer_id ? 'checked=""' : '' ?>/>
+                            <input onchange="sendAnswer(<?=$answer->id?>,<?=$s->id?>)" id="radio<?=$answer->id?>" name="answers[<?=$s->id?>]" type="radio" value="<?= $answer->id ?>" <?= isset($answered->post_answer_id) && $answer->id == $answered->post_answer_id ? 'checked=""' : '' ?>/>
                             <label for="radio<?=$answer->id?>"><?= $answer->post_content ?></label>
                         </div>
                         <?php endforeach ?>

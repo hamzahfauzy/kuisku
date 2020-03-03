@@ -91,6 +91,8 @@ class SoalController
                 'post_content'   => ['required'],
             ];
 
+            $request->skor = $request->skor ? $request->skor : 0;
+
             $data = (array) $request;
             if(count(request()->validate($data, $validate)) == 0)
             {

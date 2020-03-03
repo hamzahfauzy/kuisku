@@ -44,23 +44,45 @@ class IndexController
         $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
         if($partSesi->status == 2)
             return redirect(route('participant'));
+
         if(empty($partSesi))
         {
-            $sesi->sesi->kuis()->soal();
-            $questions = [];
-            if(!$sesi->sesi->kuis->soal)
+            $kuis = $sesi->sesi->kuis();
+            $soal = [];
+            $all_soal = [];
+
+            foreach($kuis->categories() as $category)
+            {
+                $_s = [];
+                foreach($category->soal()  as $s)
+                {
+                    $_s[] = $s->id;
+                    $all_soal[] = $s->id;
+                }
+                
+                $_s = implode(',',$_s);
+                $soal[$category->category_id] = [
+                    'max' => $category->jumlah_soal,
+                    'soal' => $_s
+                ];
+            }
+
+            // print_r($soal);
+            // return $soal;
+
+            if(empty($all_soal))
             {
                 showError('Maaf, Soal tidak di temukan untuk ujian ini');
                 return;
             }
-            foreach($sesi->sesi->kuis->soal as $soal)
-            $questions[] = $soal->post_question_id;
-            $questions = implode(',',$questions);
             
-            $soal = Soal::runRaw("SELECT id FROM posts WHERE id IN ($questions) ORDER BY RAND()");
             $questions = [];
-            foreach($soal as $val)
-                $questions[] = $val['id'];
+            foreach($soal as $key => $value)
+            {
+                $_soal = Soal::runRaw("SELECT id FROM posts WHERE id IN ($value[soal]) ORDER BY RAND() LIMIT 0,$value[max]");
+                foreach($_soal as $val)
+                    $questions[] = $val['id'];
+            }
 
             $questions = implode(',',$questions);
 
@@ -81,8 +103,8 @@ class IndexController
         $numOf = count($soal);
 
         $s = $soal[$index];
-        $examQuestion = ExamQuestion::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('post_question_id',$s->id)->first();
-        $answer = ExamAnswer::where('exam_question_id',$examQuestion->id)->where('user_id',session()->get('id'))->first();
+        // $examQuestion = ExamQuestion::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('post_question_id',$s->id)->first();
+        $answer = ExamAnswer::where('exam_id',$partSesi->sesi()->post_parent_id)->where('question_id',$s->id)->where('user_id',session()->get('id'))->first();
         
         return ['sesi' => $sesi, 's' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer];
     }
@@ -92,15 +114,17 @@ class IndexController
         $request = request()->post();
         $sesi = session()->get('currentSession');
         $exam = $sesi->sesi->kuis();
-        $examQuestion = ExamQuestion::where('post_exam_id',$exam->id)->where('post_question_id',$request->question_id)->first();
+        // $examQuestion = ExamQuestion::where('post_exam_id',$exam->id)->where('post_question_id',$request->question_id)->first();
         $jawaban = Jawaban::find($request->answer_id);
 
-        $examAnswer = ExamAnswer::where('exam_question_id',$examQuestion->id)->where('user_id',session()->get('id'))->first();
+        $examAnswer = ExamAnswer::where('exam_id',$exam->id)->where('question_id',$request->question_id)->where('user_id',session()->get('id'))->first();
+        // $examAnswer = ExamAnswer::where('exam_question_id',$examQuestion->id)->where('user_id',session()->get('id'))->first();
         if(!$examAnswer)
             $examAnswer = new ExamAnswer;
 
         $examAnswer->save([
-            'exam_question_id' => $examQuestion->id,
+            'exam_id' => $exam->id,
+            'question_id' => $request->question_id,
             'post_answer_id'   => $request->answer_id,
             'user_id'          => session()->get('id'),
             'status'           => $jawaban->post_as

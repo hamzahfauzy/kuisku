@@ -77,12 +77,9 @@ class KuisController
             foreach($sesi->partSession() as $partSesi)
             {
                 $skor = 0;
-                foreach($kuis->soal() as $soal)
-                {
-                    $jawaban = ExamAnswer::where('exam_question_id',$soal->id)->where('user_id',$partSesi->user_id)->first();
-                    if($jawaban)
-                        $skor += $jawaban->status;
-                }
+                $jawaban = ExamAnswer::where('exam_id',$kuis->id)->where('user_id',$partSesi->user_id)->get();
+                foreach($jawaban as $jwb)
+                    $skor += $jwb->status;
                 $partSesi->skor = $skor;
                 $partSesi->sesi();
                 $partSesi->sesi->waktu_mulai = str_replace('T',' ',$partSesi->sesi->meta('waktu_mulai')).":00";
@@ -358,14 +355,34 @@ class KuisController
                 ]);
 
                 $WaktuMulai = PostMeta::where('post_id',$request->id)->where('meta_key','waktu_mulai')->first();
-                $WaktuMulai->save([
-                    'meta_value' => $request->waktu_mulai
-                ]);
+                if(empty($WaktuMulai))
+                {
+                    $kuis_meta = new PostMeta;
+                    $kuis_meta->save([
+                        'post_id' => $request->id,
+                        'meta_key' => 'waktu_mulai',
+                        'meta_value' => $request->waktu_mulai
+                    ]);
+                }
+                else
+                    $WaktuMulai->save([
+                        'meta_value' => $request->waktu_mulai
+                    ]);
 
                 $WaktuSelesai = PostMeta::where('post_id',$request->id)->where('meta_key','waktu_selesai')->first();
-                $WaktuSelesai->save([
-                    'meta_value' => $request->waktu_selesai
-                ]);
+                if(empty($WaktuSelesai))
+                {
+                    $kuis_meta = new PostMeta;
+                    $kuis_meta->save([
+                        'post_id' => $request->id,
+                        'meta_key' => 'waktu_selesai',
+                        'meta_value' => $request->waktu_selesai
+                    ]);
+                }
+                else
+                    $WaktuSelesai->save([
+                        'meta_value' => $request->waktu_selesai
+                    ]);
 
                 return $this->getSesi($post_parent_id);
             }

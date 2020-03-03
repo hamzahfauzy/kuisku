@@ -27,7 +27,7 @@ class CategoryController
         if($request)
         {
             $validate = [
-                'category_name' => ['required','unique:Category']
+                'category_name' => ['required']
             ];
 
             $data = (array) $request;

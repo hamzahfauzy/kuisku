@@ -1,6 +1,8 @@
 <?php
 namespace App\Models;
 use Model;
+use Category;
+use CategoryPost;
 
 class CategoryKuis extends Model {
 
@@ -14,6 +16,17 @@ class CategoryKuis extends Model {
     function kuis()
     {
         return $this->hasOne(Post::class, ['id'=>'kuis_id']);
+    }
+
+    function soal()
+    {
+        $categorySoal = $this->hasMany(CategoryPost::class,['category_id'=>'category_id']);
+        $data = [];
+        foreach($categorySoal as $cat)
+            $data[] = $cat->post();
+
+        return $data;
+
     }
 
 }

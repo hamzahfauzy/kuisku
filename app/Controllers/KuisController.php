@@ -482,14 +482,14 @@ class KuisController
                 $_participant = Participant::where('user_email',$email)->first();
                 if(!$_participant)
                 {
-                    // $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    // $password = substr(str_shuffle($chars),0,$length);
+                    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    $password = substr(str_shuffle($chars),0,$length);
                     $participant = new Participant;
                     $participant_id = $participant->save([
                         'user_name'   => $row[1],
                         'user_email'  => $email,
                         'user_login'  => $email,
-                        'user_pass'   => md5($no_hp),
+                        'user_pass'   => md5($password),
                         'user_status' => 1,
                     ]);
 

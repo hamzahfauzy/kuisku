@@ -220,7 +220,7 @@ class ParticipantController
             'user_pass'   => md5($password), 
         ]);
         
-        $message = "Informasi Akun Ujian, website ".route('login').", username: ".$participant->user_login.", password: ".$password;
+        $message = "Informasi Akun Ujian, website ".base_url().", username: ".$participant->user_login.", password: ".$password;
 
         $sms = new ZSms;
         $response = $sms->send($participant->meta('no_hp'),$message);

@@ -181,7 +181,7 @@ class KuisController
             'user_pass'   => md5($password), 
         ]);
         
-        $message = "Informasi Ujian, website ".route('login').", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
+        $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
 
         $sms = new ZSms;
         $response = $sms->send($user->meta('no_hp'),$message);

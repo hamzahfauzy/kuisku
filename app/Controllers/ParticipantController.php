@@ -227,8 +227,10 @@ class ParticipantController
         $participant->save([
             'user_pass'   => md5($password), 
         ]);
+
+        $customer = session()->user()->customer();
         
-        $message = "Informasi Akun Ujian, website ".base_url().", username: ".$participant->user_login.", password: ".$password;
+        $message = "Info Ujian Online ".$customer->nama.", Link: s.id/eCQGX, Email: Email anda saat mendaftar, Sandi: ".$password." Login untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($participant->meta('no_hp'),$message);

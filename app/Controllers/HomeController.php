@@ -161,4 +161,15 @@ class HomeController
         print_r($page);
     }
 
+    function changePassword()
+    {
+        $request = request()->post();
+        $user = session()->user();
+        $user->save([
+            'user_pass' => md5($request->user_pass)
+        ]);
+
+        return ['status' => 1];
+    }
+
 }

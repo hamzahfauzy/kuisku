@@ -49,7 +49,7 @@ $this->js = [
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -90,7 +90,7 @@ $this->js = [
 </div>
 
 <!-- Modal Edit -->
-<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalEdit" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -132,7 +132,7 @@ $this->js = [
 </div>
 
 <!-- Modal Jawaban -->
-<div class="modal fade" id="modalJawaban" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalJawaban" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -362,7 +362,7 @@ function fetchToTable(data = false)
         var categories = val.categories.map(e => e.category.category_name ).join(', ')
         var answer = `<ul>`
         val.answers.forEach(val => {
-            answer += `<li>${val.post_content}</li>`
+            answer += `<li>${val.post_content} (Skor: ${val.post_as})</li>`
         })
         answer += '</ul>'
         $('.table-soal > tbody').append(`<tr>
@@ -571,7 +571,8 @@ async function deleteJawaban(id)
 function filterSoal(keyword)
 {
     var data = dataSoal.filter(soal => {
-        return soal.post_title.includes(keyword) || soal.post_content.includes(keyword)
+        var categories = soal.categories.map(e => e.category.category_name ).join(', ')
+        return soal.post_title.includes(keyword) || soal.post_content.includes(keyword) || categories.includes(keyword)
     })
 
     fetchToTable(data)

@@ -8,6 +8,11 @@ return [
         'return'   => 'page:index'
     ],
 
+    'change-password' => [
+        'callback' => 'HomeController@changePassword',
+        'return'   => 'json'
+    ],
+
     'master' => [
         'middleware' => 'Master',
         'callback' => 'HomeController@index',

@@ -165,14 +165,20 @@ class KuisController
             return ['status' => false, 'message' => 'belum ada waktu mulai dan selesai'];
         $waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai')).":00";
         $waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai')).":00";
-        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        $waktu_mulai = new \DateTime($waktu_mulai);
+        $waktu_selesai = new \DateTime($waktu_selesai);
+        
+        $chars = "abcdefghijklmnopqrstuvwxyz0123456789";
         $password = substr(str_shuffle($chars),0,10);
         $participant = Participant::find($sesiUser->user_id);
         $participant->save([
             'user_pass'   => md5($password), 
         ]);
-        
-        $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
+
+        // $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
+        $customer = session()->user()->customer();
+        $message = "Info Ujian Online ".$customer->nama.", Link: s.id/eCQGX, Email: Email anda saat mendaftar, Sandi: ".$password." Login untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($user->meta('no_hp'),$message);

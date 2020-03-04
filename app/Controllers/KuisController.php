@@ -171,7 +171,9 @@ class KuisController
         // $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
         $customer = session()->user()->customer();
         $nama = "PT. Kawasan Industri Nusantara";
-        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: Email anda saat mendaftar, Sandi: ".$password." Login untuk melihat jadwal ujian";
+        $email = $user->user_login;
+        $email = str_replace('@','[at]',$email);
+        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", Masuk untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($user->meta('no_hp'),$message);

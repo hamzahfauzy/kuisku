@@ -229,8 +229,8 @@ class ParticipantController
         ]);
 
         $customer = session()->user()->customer();
-        
-        $message = "Info Ujian Online ".$customer->nama.", Link: s.id/eCQGX, Email: Email anda saat mendaftar, Sandi: ".$password." Login untuk melihat jadwal ujian";
+        $nama = "PT. Kawasan Industri Nusantara";
+        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: Email anda saat mendaftar, Sandi: ".$password." Login untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($participant->meta('no_hp'),$message);

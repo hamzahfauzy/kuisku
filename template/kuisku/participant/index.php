@@ -30,7 +30,47 @@
                 <br><br>
                 <?php if($currentSession): ?>
                     <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1): ?>
+                    <?php $kuis = $nextSession->sesi->kuis(); ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>Nama Ujian</td>
+                            <td><?= $kuis->post_title ?></td>
+                        </tr>
+                        <tr>
+                            <td>Jadwal Mulai</td>
+                            <td><?= (new \DateTime($nextSession->sesi->waktu_mulai))->format('d-m-Y H:i') ?></td>
+                        </tr>
+                        <tr>
+                            <td>Jadwal Selesai</td>
+                            <td><?= (new \DateTime($nextSession->sesi->waktu_selesai))->format('d-m-Y H:i') ?></td>
+                        </tr>
+                        <tr>
+                            <td>Keterangan</td>
+                            <td><?= $kuis->post_content ?></td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Soal</td>
+                            <td>
+                            <?php 
+                            $jumlah_soal = 0;
+                            foreach($kuis->categories() as $category)
+                                $jumlah_soal += $category->jumlah_soal;
+                            ?>
+                            <?= $jumlah_soal ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Waktu Mengerjakan</td>
+                            <td>
+                            <?php
+                            $to_time = strtotime($nextSession->sesi->waktu_selesai);
+                            $from_time = strtotime($nextSession->sesi->waktu_mulai);
+                            echo round(abs($to_time - $from_time) / 60,2). " menit";
+                            ?>
+                            </td>
+                        </tr>
+                    </table>
                     <?php else: ?>
                     <div class="alert alert-success">Anda sudah menyelesaikan Ujian</div>
                     <?php endif ?>

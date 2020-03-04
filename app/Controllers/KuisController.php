@@ -419,6 +419,9 @@ class KuisController
         $request = request()->post();
         if($request)
         {
+            $kuis = Kuis::find($request->id);
+            foreach($kuis->sesi() as $sesi)
+                Sesi::delete($sesi->id);
             Kuis::delete($request->id);
             return $this->index();
         }

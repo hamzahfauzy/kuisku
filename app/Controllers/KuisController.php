@@ -159,15 +159,6 @@ class KuisController
     {
         $request = request()->post();
         $sesiUser = SesiUser::where('post_id',$request->sesi_id)->where('user_id',$request->user_id)->first();
-        $sesi = $sesiUser->sesi();
-        $user = $sesiUser->user();
-        if(empty($sesi->meta('waktu_mulai')))
-            return ['status' => false, 'message' => 'belum ada waktu mulai dan selesai'];
-        $waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai')).":00";
-        $waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai')).":00";
-
-        $waktu_mulai = new \DateTime($waktu_mulai);
-        $waktu_selesai = new \DateTime($waktu_selesai);
         
         $chars = "abcdefghijklmnopqrstuvwxyz0123456789";
         $password = substr(str_shuffle($chars),0,10);
@@ -176,7 +167,6 @@ class KuisController
             'user_pass'   => md5($password), 
         ]);
 
-        // $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
         $customer = session()->user()->customer();
         $nama = "PT. Kawasan Industri Nusantara";
         $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: Email anda saat mendaftar, Sandi: ".$password." Login untuk melihat jadwal ujian";

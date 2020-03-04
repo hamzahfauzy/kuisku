@@ -30,7 +30,10 @@
                 <br><br>
                 <?php if($currentSession): ?>
                     <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1): ?>
-                    <?php $kuis = $currentSession->partSesi->sesi()->kuis(); ?>
+                    <?php 
+                        $sesi = $currentSession->partSesi->sesi();
+                        $kuis = $sesi->kuis(); 
+                    ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
                     <table class="table table-bordered">
                         <tr>
@@ -39,11 +42,11 @@
                         </tr>
                         <tr>
                             <td>Jadwal Mulai</td>
-                            <td><?= (new \DateTime($nextSession->sesi->waktu_mulai))->format('d-m-Y H:i') ?></td>
+                            <td><?= (new \DateTime($sesi->waktu_mulai))->format('d-m-Y H:i') ?></td>
                         </tr>
                         <tr>
                             <td>Jadwal Selesai</td>
-                            <td><?= (new \DateTime($nextSession->sesi->waktu_selesai))->format('d-m-Y H:i') ?></td>
+                            <td><?= (new \DateTime($sesi->waktu_selesai))->format('d-m-Y H:i') ?></td>
                         </tr>
                         <tr>
                             <td>Keterangan</td>
@@ -64,8 +67,8 @@
                             <td>Waktu Mengerjakan</td>
                             <td>
                             <?php
-                            $to_time = strtotime($nextSession->sesi->waktu_selesai);
-                            $from_time = strtotime($nextSession->sesi->waktu_mulai);
+                            $to_time = strtotime($sesi->waktu_selesai);
+                            $from_time = strtotime($sesi->waktu_mulai);
                             echo round(abs($to_time - $from_time) / 60,2). " menit";
                             ?>
                             </td>

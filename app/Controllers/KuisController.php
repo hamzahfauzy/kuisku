@@ -173,7 +173,7 @@ class KuisController
         $nama = "PT. Kawasan Industri Nusantara";
         $email = $user->user_login;
         $email = str_replace('@','[at]',$email);
-        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", Masuk untuk melihat jadwal ujian";
+        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($user->meta('no_hp'),$message);

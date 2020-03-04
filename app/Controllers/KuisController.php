@@ -583,10 +583,10 @@ class KuisController
 
                 $kuis = Kuis::find($request->id);
                 $max_participant = $kuis->meta('max_participant');
-                $pembagian_jumlah_sesi = ceil(count($ret) / $max_participant);
-                $sisa_pembagian = count($ret) % $max_participant;
-                if($sisa_pembagian) $pembagian_jumlah_sesi += 1;
-                $partitions = array_chunk($ret,$pembagian_jumlah_sesi,true);
+                // $pembagian_jumlah_sesi = ceil(count($ret) / $max_participant);
+                // $sisa_pembagian = count($ret) % $max_participant;
+                // if($sisa_pembagian) $pembagian_jumlah_sesi += 1;
+                $partitions = array_chunk($ret,$max_participant,true);
                 foreach($partitions as $key => $partition)
                 {
                     $no = $key+1;

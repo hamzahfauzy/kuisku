@@ -23,7 +23,7 @@ $this->js = [
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus fa-fw"></i> Tambah Sesi</button>
                         <button class="btn btn-success" onclick="fetchKategori()" data-toggle="modal" data-target="#modalKategori"><i class="fa fa-list fa-fw"></i> Kategori Soal</button>
-                        <button class="btn btn-danger" onclick="import_file.click()"><i class="fa fa-upload"></i> Import Peserta</button>
+                        <button class="btn btn-danger" id="btn-import" onclick="import_file.click()"><i class="fa fa-upload"></i> Import Peserta</button>
                         <a href="<?= route('admin/kuis/view/'.$kuis->id.'/scoreboard') ?>" class="btn btn-warning"><i class="fa fa-file-text fa-fw"></i> Scoreboard</a>
                     </div>
                     <div class="panel-content not-grow">
@@ -396,6 +396,9 @@ async function fetchEditKuis(id)
 
 async function fetchPeserta(id)
 {
+    $('.table-peserta > tbody').html('<tr><td><i>Loading...</i></td></tr>')
+    $('.table-calon-peserta > tbody').html('<tr><td><i>Loading...</i></td></tr>')
+
     let request = await fetch('<?= base_url() ?>/admin/kuis/sesi/view/'+id)
     let response = await request.json()
 
@@ -826,6 +829,8 @@ async function importParticipant(el)
         confirmButtonText: 'Ya'
     }).then(async (result) => {
         if (result.value) {
+            var btnImport = document.querySelector('#btn-import');
+            btnImport.innerHTML = "Mengimport..."
             var data = new FormData()
             data.append('id', '<?= $kuis->id ?>')
             data.append('file', el.files[0])
@@ -856,6 +861,7 @@ async function importParticipant(el)
                     'success'
                 )
 
+                btnImport.innerHTML = "<i class='fa fa-upload'></i> Import Peserta"
                 loadData()
             }
         }

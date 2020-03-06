@@ -558,6 +558,7 @@ function fetchToTable(data = false)
                     <br>
                     Mulai : ${val.waktu_mulai}<br>
                     Selesai : ${val.waktu_selesai}<br>
+                    Jumlah Peserta : ${val.jumlah_peserta}<br>
                     <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
                     <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                     <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
@@ -579,6 +580,7 @@ function fetchToTable(data = false)
                     <br>
                     Mulai : ${val.waktu_mulai}<br>
                     Selesai : ${val.waktu_selesai}<br>
+                    Jumlah Peserta : ${val.jumlah_peserta}<br>
                     <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
                     <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                     <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
@@ -592,6 +594,7 @@ function fetchToTable(data = false)
                     <br>
                     Mulai : ${val.waktu_mulai}<br>
                     Selesai : ${val.waktu_selesai}<br>
+                    Jumlah Peserta : ${val.jumlah_peserta}<br>
                     <a href="javascript:void(0)" onclick="fetchPeserta(${val.id})" class="act-btn jawaban-btn" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Peserta</a> |
                     <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
                 </td>

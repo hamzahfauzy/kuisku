@@ -81,6 +81,11 @@ class SoalController
         return ['status' => false];
     }
 
+    function getAnswer($id)
+    {
+        return Jawaban::find($id);
+    }
+
     function insertAnswer()
     {
         $request = request()->post();
@@ -97,7 +102,10 @@ class SoalController
             if(count(request()->validate($data, $validate)) == 0)
             {
                 $excerpt  = strWordCut($request->post_content,100);
-                $question = new Jawaban;
+                if($request->jawaban_id != 0)
+                    $question = Jawaban::where('id',$request->jawaban_id)->first();
+                else
+                    $question = new Jawaban;
                 $question_id = $question->save([
                     'post_author_id' => session()->get('id'),
                     'post_title'     => $request->post_content,

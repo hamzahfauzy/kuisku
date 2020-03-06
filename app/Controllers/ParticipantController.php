@@ -64,9 +64,35 @@ class ParticipantController
     function index()
     {
         $customer = session()->user()->customer();
-        $participants = $customer->participants();
-        foreach($participants as $participant)
+        $count_of_participant = CustomerParticipant::where('customer_id',$customer->id)->count();
+        $participants = []; //$customer->participants();
+        $limit = 10;
+        $num_of_page = ceil($count_of_participant/$limit);
+        return [
+            'count_of_participant' => $count_of_participant,
+            'num_of_page' => $num_of_page
+        ];
+    }
+
+    function get()
+    {
+        $customer = session()->user()->customer();
+        $participants = [];
+        // $participants = $customer->participants();
+        // foreach($participants as $participant)
+        //     $participant->no_hp = $participant->meta('no_hp');
+        // return $participants;
+        $limit = 10;
+        $page = isset($_GET['page']) ? $_GET['page'] : 1;
+        $page = $page-1;
+        $page = $limit * $page;
+        $customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->limit($page.', '.$limit)->get();
+        foreach($customerParticipant as $custPart)
+        {
+            $participant = $custPart->participant();
             $participant->no_hp = $participant->meta('no_hp');
+            $participants[] = $participant;
+        }
         return $participants;
     }
 
@@ -232,7 +258,7 @@ class ParticipantController
         $nama = "PT. Kawasan Industri Nusantara";
         $email = $participant->user_login;
         $email = str_replace('@','[at]',$email);
-        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
+        $message = "Info Test ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($participant->meta('no_hp'),$message);

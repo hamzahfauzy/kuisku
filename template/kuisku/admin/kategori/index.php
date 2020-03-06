@@ -30,9 +30,17 @@ $this->js = [
                     </div>
                 </div>
                 <table class="table table-bordered table-striped table-kategori">
+                    <thead>
+                        <tr>
+                            <th width="20px">#</th>
+                            <th>Kategori</th>
+                            <th>Deskripsi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <td><i>Tidak ada data!</i></td>
+                            <td colspan="4"><i>Tidak ada data!</i></td>
                         </tr>
                     </tbody>
                 </table>
@@ -198,17 +206,29 @@ function fetchToTable(data = false)
 {
     if(!data)
         data = dataKategori
-    $('.table-kategori').html('')
+    $('.table-kategori > tbody').html('<tr><td colspan="4"><i>Loading...</i></td></tr>')
     if(data.length == 0)
     {
-        $('.table-kategori').html('<tr><td><i>Tidak ada data!</i></td></tr>')
+        $('.table-kategori > tbody').html('<tr><td colspan="4"><i>Tidak ada data!</i></td></tr>')
+    }
+    else
+    {
+        $('.table-kategori > tbody').html('')
     }
 
+    var no = 1
     data.forEach(val => {
-        $('.table-kategori').append(`<tr>
+        $('.table-kategori > tbody').append(`<tr>
+            <td>
+                ${no++}
+            </td>
             <td>
                 <b>${val.category_name}</b>
+            </td>
+            <td>
                 <p>${val.category_description}</p>
+            </td>
+            <td>
                 <a href="javascript:void(0)" onclick="fetchEditKategori(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deleteKategori(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>

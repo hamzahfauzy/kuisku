@@ -241,6 +241,12 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/question/answer/find/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'SoalController@getAnswer',
+        'return'   => 'json'
+    ],
+
     'admin/question/update' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@update',
@@ -303,7 +309,7 @@ return [
 
     'admin/participant/get' => [
         'middleware' => 'Admin',
-        'callback' => 'ParticipantController@index',
+        'callback' => 'ParticipantController@get',
         'return'   => 'json'
     ],
 
@@ -340,6 +346,18 @@ return [
     'admin/kuis/get' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@index',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/get-participant/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@getParticipant',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/notifikasi-peserta' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@notificationParticipant',
         'return'   => 'json'
     ],
 

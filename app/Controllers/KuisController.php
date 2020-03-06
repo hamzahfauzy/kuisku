@@ -42,8 +42,51 @@ class KuisController
             $sesi->now = date('Y-m-d H:i:s');
             $sesi->waktu_mulai = str_replace('T',' ',$sesi->meta('waktu_mulai'));
             $sesi->waktu_selesai = str_replace('T',' ',$sesi->meta('waktu_selesai'));
+            $sesi->jumlah_peserta = count($sesi->peserta());
         }
         return $kuis->sesi;
+    }
+
+    function getParticipant($id)
+    {
+        $kuis = $this->find($id);
+        $participants = [];
+        foreach($kuis->sesi() as $sesi)
+            foreach($sesi->peserta() as $participant)
+            {
+                $peserta = $participant->user;
+                $peserta->no_hp = $peserta->meta('no_hp');
+                $participants[] = $peserta;
+            }
+        return $participants;
+    }
+
+    function notificationParticipant()
+    {
+        $request = request()->post();
+        $participants = $this->getParticipant($request->id);
+        $response = [];
+
+        foreach($participants as $participant)
+        {
+            $chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            $password = substr(str_shuffle($chars),0,10);
+            $participant->save([
+                'user_pass'   => md5($password), 
+            ]);
+
+            // $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
+            $customer = session()->user()->customer();
+            $nama = "PT. Kawasan Industri Nusantara";
+            $email = $user->user_login;
+            $email = str_replace('@','[at]',$email);
+            $message = "Info Test ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
+
+            $sms = new ZSms;
+            $response[] = $sms->send($user->meta('no_hp'),$message);
+        }
+
+        return ['status' => 1,'message' => $response];
     }
 
     function getSoal($id)
@@ -173,7 +216,7 @@ class KuisController
         $nama = "PT. Kawasan Industri Nusantara";
         $email = $user->user_login;
         $email = str_replace('@','[at]',$email);
-        $message = "Info Ujian Online ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
+        $message = "Info Test ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
 
         $sms = new ZSms;
         $response = $sms->send($user->meta('no_hp'),$message);

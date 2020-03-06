@@ -110,6 +110,43 @@ $this->js = [
   </div>
 </div>
 
+<!-- Modal Peserta-->
+<div class="modal fade" id="modalPeserta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Peserta Kuis</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button class="btn btn-primary btn-notifikasi"><i class="fa fa-send"></i> Kirim Notifikasi Ke Semua Peserta</button>
+        <p></p>
+        <table class="table table-bordered table-striped table-peserta">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>Peserta</td>
+                    <td>Email</td>
+                    <td>No. Handphone</td>
+                    <td>Aksi</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="5"><i>Tidak ada data!</i></td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-close"></i> Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script async defer>
 var dataKuis   = {};
 
@@ -234,10 +271,136 @@ function fetchToTable(data = false)
                 <br>
                 Jumlah Max. Peserta : ${val.max_participant ? val.max_participant : '-'} <br>
                 <a href="<?= base_url() ?>/admin/kuis/view/${val.id}" class="act-btn jawaban-btn"><i class="fa fa-eye"></i> Detail</a> |
+                <a href="javascript:void(0)" onclick="fetchPesertaKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Daftar Peserta</a> |
                 <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deleteKuis(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
+    })
+}
+
+async function sendAllNotification(id)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengirim notifikasi ke seluruh peserta ini ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            let request = await fetch('<?= route('admin/kuis/notifikasi-peserta') ?>',{
+                method :'POST',
+                headers : {
+                    'Content-Type':'application/json'
+                },
+                body   : JSON.stringify({id:id}),
+            })
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Notifikasi gagal terkirim!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat pengiriman sms</a>'
+                })
+            }
+            else
+            {
+                Swal.fire(
+                    'Success!',
+                    'Notifikasi Berhasil di kirim.',
+                    'success'
+                )
+            }
+        }
+    })
+}
+
+async function fetchPesertaKuis(id)
+{
+    $('.btn-notifikasi').on('click', function(){
+        sendAllNotification(id)
+    })
+    let request = await fetch('<?= base_url() ?>/admin/kuis/get-participant/'+id)
+    let data = await request.json()
+    $('.table-peserta > tbody').html('<tr><td colspan="5"><i>Loading...</i></td></tr>')
+    if(data.length == 0)
+    {
+        $('.table-peserta > tbody').html('<tr><td colspan="5"><i>Tidak ada data!</i></td></tr>')
+    }
+    else
+    {
+        $('.table-peserta > tbody').html('')
+    }
+
+    var no = 1
+    data.forEach(val => {
+        $('.table-peserta > tbody').append(`<tr>
+            <td>${no++}</td>
+            <td>
+                <b>${val.user_name}</b>
+            </td>
+            <td>
+                ${val.user_email}
+            </td>
+            <td>
+                ${val.no_hp}
+            </td>
+            <td style="white-space:nowrap;">
+                <a href="javascript:void(0)" onclick="kirimNotifikasi(${val.id},this)" class="act-btn jawab-btn"><i class="fa fa-send"></i> Kirim Notifikasi</a>
+            </td>
+        </tr>`)
+    })
+}
+
+async function kirimNotifikasi(user_id, el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengirim notifikasi kepada peserta ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            el.innerHTML = "Loading..."
+            el.removeAttribute("onclick")
+            let request = await fetch('<?= route('admin/participant/notifikasi-peserta') ?>',{
+                method :'POST',
+                headers : {
+                    'Content-Type':'application/json'
+                },
+                body   : JSON.stringify({user_id:user_id}),
+            })
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Notifikasi gagal terkirim!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat pengiriman sms</a>'
+                })
+            }
+            else
+            {
+                Swal.fire(
+                    'Success!',
+                    'Notifikasi Berhasil di kirim.',
+                    'success'
+                )
+
+                loadData()
+            }
+        }
     })
 }
 

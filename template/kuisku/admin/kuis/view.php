@@ -664,7 +664,17 @@ async function jadikanPeserta(sesi_id, user_id, el)
     })
 
     let response = await request.json()
-    fetchPeserta(sesi_id)
+    if(response.status == false)
+    {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Gagal menjadikan peserta!',
+            footer: '<a href="javascript:void(0)">Peserta sudah mencapai batas maksimal</a>'
+        })
+    }
+    else
+        fetchPeserta(sesi_id)
 }
 
 async function batalkanPeserta(sesi_id, user_id, el)
@@ -721,8 +731,6 @@ async function kirimNotifikasi(sesi_id, user_id, el)
                     'Notifikasi Berhasil di kirim.',
                     'success'
                 )
-
-                fetchPeserta(sesi_id)
             }
         }
     })

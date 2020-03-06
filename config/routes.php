@@ -499,6 +499,12 @@ return [
         'return'     => 'partial:participant.index'
     ],
 
+    'participant/load-navigation' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@loadNavigation',
+        'return'     => 'json'
+    ],
+
     'participant/exam/answer' => [
         'middleware' => 'Participant',
         'callback'   => 'Participant\IndexController@answer',

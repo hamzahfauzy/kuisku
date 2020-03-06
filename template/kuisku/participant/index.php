@@ -30,7 +30,7 @@
                 <br><br>
                 <?php if($currentSession): ?>
                     <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1): ?>
-                    <?php $kuis = $currentSession->partSesi->sesi()->kuis(); ?>
+                    <?php $kuis = $currentSession->sesi->kuis(); ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
                     <table class="table table-bordered">
                         <tr>

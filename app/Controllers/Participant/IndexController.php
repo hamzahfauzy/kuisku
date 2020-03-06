@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers\Participant;
-use App\Models\{Participant,ParticipantSession,Soal,ExamQuestion,ExamAnswer,Jawaban};
+use App\Models\{Participant,ParticipantSession,ParticipantAnswer,Soal,ExamQuestion,ExamAnswer,Jawaban};
 use Post;
 
 class IndexController 
@@ -30,6 +30,13 @@ class IndexController
                 $nextSession = $partSesi;
             }
         }
+        // echo "<pre>";
+        // print_r([
+        //     'participant' => $participant,
+        //     'currentSession' => $currentSession,
+        //     'nextSession' => $nextSession,
+        // ]);
+        // echo "</pre>";
         return [
             'participant' => $participant,
             'currentSession' => $currentSession,
@@ -42,7 +49,7 @@ class IndexController
         $index = $no-1;
         $sesi = session()->get('currentSession');
         $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
-        if($partSesi->status == 2)
+        if(isset($partSesi->status) && $partSesi->status == 2)
             return redirect(route('participant'));
 
         if(empty($partSesi))
@@ -103,10 +110,51 @@ class IndexController
         $numOf = count($soal);
 
         $s = $soal[$index];
+        $participantAnswer = ParticipantAnswer::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('question_id',$s->id)->where('user_id',session()->get('id'))->first();
+        if(empty($participantAnswer))
+        {
+            $jawaban = [];
+            $randomAnswer = Jawaban::runRaw("SELECT id FROM posts WHERE post_parent_id = $s->id AND post_type = 'jawaban' ORDER BY RAND()");
+            foreach($randomAnswer as $val)
+                $jawaban[] = $val['id'];
+
+            $jawaban = implode(',',$jawaban);
+            $participantAnswer = new ParticipantAnswer;
+            $participantAnswerId = $participantAnswer->save([
+                'post_exam_id' => $partSesi->sesi()->post_parent_id,
+                'user_id' => session()->get('id'),
+                'question_id' => $s->id,
+                'answer_order' => $jawaban
+            ]);
+
+            $participantAnswer = ParticipantAnswer::find($participantAnswerId);
+
+        }
+
+        $jwb = explode(',',$participantAnswer->answer_order);
+        $jwb = Jawaban::whereIn('id',$jwb)->orderby("FIELD(id, $participantAnswer->answer_order)","")->get();
         // $examQuestion = ExamQuestion::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('post_question_id',$s->id)->first();
         $answer = ExamAnswer::where('exam_id',$partSesi->sesi()->post_parent_id)->where('question_id',$s->id)->where('user_id',session()->get('id'))->first();
         
-        return ['sesi' => $sesi, 's' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer];
+        return ['sesi' => $sesi, 'jwb' => $jwb, 's' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer];
+    }
+
+    function loadNavigation()
+    {
+        $no = isset($_GET['page']) ? $_GET['page'] : 1;
+        $sesi = session()->get('currentSession');
+        $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
+        
+        $questions = explode(',',$partSesi->questions_order);
+        $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();
+
+        $numOf = count($soal);
+
+        $s = $soal;
+        // $examQuestion = ExamQuestion::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('post_question_id',$s->id)->first();
+        $answer = ExamAnswer::where('exam_id',$partSesi->sesi()->post_parent_id)->where('user_id',session()->get('id'))->get();
+        
+        return ['s' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer];
     }
 
     function answer()

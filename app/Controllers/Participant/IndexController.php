@@ -115,7 +115,7 @@ class IndexController
             $partSesi = ParticipantSession::find($id);
         }
 
-        $waktu_selesai = $partSesi->meta('end_time');
+        $waktu_selesai = $partSesi->end_time;
         
         $questions = explode(',',$partSesi->questions_order);
         $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();

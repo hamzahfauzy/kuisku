@@ -29,7 +29,7 @@
                 <span class="ip-info">IP: <?= getUserIpAddr() ?></span><br>
                 <br><br>
                 <?php if($currentSession): ?>
-                    <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1): ?>
+                    <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1 || (isset($currentSession->status_durasi) && $currentSession->status_durasi == 1)): ?>
                     <?php $kuis = $currentSession->sesi->kuis(); ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
                     <table class="table table-bordered">

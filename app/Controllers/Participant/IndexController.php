@@ -26,7 +26,11 @@ class IndexController
             {
                 if($partSesi->partSesi())
                 {
-                    
+                    $end_time = strtotime($partSesi->partSesi->end_time);
+                    if($now < $end_time)
+                        $partSesi->status_durasi = 1;
+                    if($now > $end_time)
+                        $partSesi->status_durasi = 0;
                 }
                 $currentSession = $partSesi;
                 session()->set('currentSession',$partSesi);

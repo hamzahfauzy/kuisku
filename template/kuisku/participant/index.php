@@ -63,11 +63,7 @@
                         <tr>
                             <td>Waktu Mengerjakan</td>
                             <td>
-                            <?php
-                            $to_time = strtotime($currentSession->sesi->waktu_selesai);
-                            $from_time = strtotime($currentSession->sesi->waktu_mulai);
-                            echo round(abs($to_time - $from_time) / 60,2). " menit";
-                            ?>
+                            <?= $kuis->meta('durasi')." menit" ?>
                             </td>
                         </tr>
                     </table>
@@ -108,11 +104,7 @@
                         <tr>
                             <td>Waktu Mengerjakan</td>
                             <td>
-                            <?php
-                            $to_time = strtotime($nextSession->sesi->waktu_selesai);
-                            $from_time = strtotime($nextSession->sesi->waktu_mulai);
-                            echo round(abs($to_time - $from_time) / 60,2). " menit";
-                            ?>
+                            <?= $kuis->meta('durasi')." menit" ?>
                             </td>
                         </tr>
                     </table>

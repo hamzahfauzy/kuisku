@@ -31,7 +31,11 @@
                 <?php if($currentSession): ?>
                     <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1 || (isset($currentSession->status_durasi) && $currentSession->status_durasi == 1)): ?>
                     <?php $kuis = $currentSession->sesi->kuis(); ?>
+                    <?php if($currentSession->partSesi->status == 1): ?>
                     <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
+                    <?php else: ?>
+                    <div class="alert alert-success">Anda sudah menyelesaikan Ujian</div>
+                    <?php endif; ?>
                     <table class="table table-bordered">
                         <tr>
                             <td>Nama Ujian</td>

@@ -15,7 +15,10 @@ class KuisController
     {
         $kuis = Kuis::where('post_author_id',session()->get('id'))->get();
         foreach($kuis as $val)
+        {
             $val->max_participant = $val->meta('max_participant');
+            $val->durasi = $val->meta('durasi');
+        }
         return $kuis;
     }
 
@@ -23,6 +26,7 @@ class KuisController
     {
         $kuis = Kuis::where('id',$id)->where('post_author_id',session()->get('id'))->first();
         $kuis->max_participant = $kuis->meta('max_participant');
+        $kuis->durasi = $kuis->meta('durasi');
         return $kuis;
     }
 
@@ -255,6 +259,7 @@ class KuisController
                 'post_title'   => ['required'],
                 'post_content' => ['required'],
                 'max_participant' => ['required'],
+                'durasi' => ['required'],
             ];
 
             $data = (array) $request;
@@ -279,6 +284,13 @@ class KuisController
                     'post_id' => $kuis_id,
                     'meta_key' => 'max_participant',
                     'meta_value' => $request->max_participant
+                ]);
+
+                $durasi = new PostMeta;
+                $durasi->save([
+                    'post_id' => $kuis_id,
+                    'meta_key' => 'durasi',
+                    'meta_value' => $request->durasi
                 ]);
 
                 return $this->index();
@@ -350,6 +362,7 @@ class KuisController
                 'post_title' => ['required'],
                 'post_content' => ['required'],
                 'max_participant' => ['required'],
+                'durasi' => ['required'],
             ];
 
             $data = (array) $request;
@@ -366,6 +379,7 @@ class KuisController
                 ]);
 
                 $kuis_meta = PostMeta::where('post_id',$request->id)->where('meta_key','max_participant')->first();
+                $durasi = PostMeta::where('post_id',$request->id)->where('meta_key','durasi')->first();
                 if($kuis_meta)
                     $kuis_meta->save([
                         'meta_value' => $request->max_participant
@@ -377,6 +391,20 @@ class KuisController
                         'post_id' => $request->id,
                         'meta_key' => 'max_participant',
                         'meta_value' => $request->max_participant
+                    ]);
+                }
+
+                if($durasi)
+                    $durasi->save([
+                        'meta_value' => $request->durasi
+                    ]);
+                else
+                {
+                    $durasi = new PostMeta;
+                    $durasi->save([
+                        'post_id' => $request->id,
+                        'meta_key' => 'durasi',
+                        'meta_value' => $request->durasi
                     ]);
                 }
 

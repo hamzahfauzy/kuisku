@@ -7,7 +7,7 @@ $this->js = [
     asset('js/sweetalert2.min.js'),
 ];
 
-$waktu_selesai = str_replace(' ','T',$sesi->sesi->waktu_selesai);
+$waktu_selesai = str_replace(' ','T',$waktu_selesai);
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
 <div class="exam-panel">    
@@ -44,7 +44,7 @@ hours = hours < 10 ? "0"+hours : hours;
 minutes = minutes < 10 ? "0"+minutes : minutes;
 seconds = seconds < 10 ? "0"+seconds : seconds;
 document.getElementById("countdown").innerHTML = hours + ":" + minutes + ":" + seconds; 
-    if (t < 0) { 
+    if (t <= 0) { 
         clearInterval(x); 
         location=location
     } 

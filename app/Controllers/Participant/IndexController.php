@@ -30,13 +30,7 @@ class IndexController
                 $nextSession = $partSesi;
             }
         }
-        // echo "<pre>";
-        // print_r([
-        //     'participant' => $participant,
-        //     'currentSession' => $currentSession,
-        //     'nextSession' => $nextSession,
-        // ]);
-        // echo "</pre>";
+
         return [
             'participant' => $participant,
             'currentSession' => $currentSession,
@@ -47,6 +41,7 @@ class IndexController
     function exam($no = 1)
     {
         $index = $no-1;
+        $waktu_selesai = "";
         $sesi = session()->get('currentSession');
         $partSesi = ParticipantSession::where('post_exam_id',$sesi->post_id)->where('user_id',session()->get('id'))->first();
         if(isset($partSesi->status) && $partSesi->status == 2)
@@ -93,16 +88,23 @@ class IndexController
 
             $questions = implode(',',$questions);
 
+            $start_time = date('Y-m-d H:i:s');
+            $end_time   = date('Y-m-d H:i:s',strtotime('+'.$kuis->meta('durasi').' minutes',strtotime($start_time)));
+
             $partSession = new ParticipantSession;
             $id = $partSession->save([
                 'post_exam_id' => $sesi->post_id,
                 'user_id' => session()->get('id'),
                 'questions_order' => $questions,
                 'status' => 1,
+                'start_time' => $start_time,
+                'end_time' => $end_time,
             ]);
 
             $partSesi = ParticipantSession::find($id);
         }
+
+        $waktu_selesai = $partSesi->meta('end_time');
         
         $questions = explode(',',$partSesi->questions_order);
         $soal = Soal::whereIn('id',$questions)->orderby("FIELD(id, $partSesi->questions_order)","")->get();
@@ -136,7 +138,7 @@ class IndexController
         // $examQuestion = ExamQuestion::where('post_exam_id',$partSesi->sesi()->post_parent_id)->where('post_question_id',$s->id)->first();
         $answer = ExamAnswer::where('exam_id',$partSesi->sesi()->post_parent_id)->where('question_id',$s->id)->where('user_id',session()->get('id'))->first();
         
-        return ['sesi' => $sesi, 'jwb' => $jwb, 's' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer];
+        return ['sesi' => $sesi, 'jwb' => $jwb, 's' => $s, 'no' => $no, 'numOf' => $numOf, 'answered' => $answer, 'waktu_selesai' => $waktu_selesai];
     }
 
     function loadNavigation()

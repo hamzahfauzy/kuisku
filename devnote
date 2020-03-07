@@ -7,3 +7,8 @@ UPDATE `posts` set post_as = 0 WHERE post_as = "Jawaban Salah"
 run query : mon, 1 mar 2020
 
 DELETE FROM `posts` WHERE post_as = 'sesi'
+
+
+run query : sat, 7 marc 2020
+
+ALTER TABLE `participant_session` ADD `start_time` DATETIME NULL AFTER `status`, ADD `end_time` DATETIME NULL AFTER `start_time`;

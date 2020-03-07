@@ -65,6 +65,10 @@ $this->js = [
                 <label for="max_participant">Jumlah Peserta Per Sesi</label>
                 <input type="number" name="max_participant" id="max_participant" class="form-control" required min="0">
             </div>
+            <div class="form-group">
+                <label for="durasi">Durasi Ujian (Menit)</label>
+                <input type="number" name="durasi" id="durasi" class="form-control" required min="0">
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -99,6 +103,10 @@ $this->js = [
             <div class="form-group">
                 <label for="max_participant">Jumlah Peserta Per Sesi</label>
                 <input type="number" name="max_participant" id="max_participant" class="form-control" required min="0">
+            </div>
+            <div class="form-group">
+                <label for="durasi">Durasi Ujian (Menit)</label>
+                <input type="number" name="durasi" id="durasi" class="form-control" required min="0">
             </div>
         </form>
       </div>
@@ -164,6 +172,7 @@ async function simpanKuis()
         post_title:$('#addKuisForm').find('#title').val(),
         post_content:$('#addKuisForm').find('#description').val(),
         max_participant:$('#addKuisForm').find('#max_participant').val(),
+        durasi:$('#addKuisForm').find('#durasi').val(),
     }
 
     let request = await fetch('<?= route('admin/kuis/insert') ?>',{
@@ -208,6 +217,7 @@ async function fetchEditKuis(id)
     $('#editKuisForm').find('#title').val(response.post_title)
     $('#editKuisForm').find('#description').val(response.post_content)
     $('#editKuisForm').find('#max_participant').val(response.max_participant)
+    $('#editKuisForm').find('#durasi').val(response.durasi)
 }
 
 async function editKuis()
@@ -217,6 +227,7 @@ async function editKuis()
         post_title:$('#editKuisForm').find('#title').val(),
         post_content:$('#editKuisForm').find('#description').val(),
         max_participant:$('#editKuisForm').find('#max_participant').val(),
+        durasi:$('#editKuisForm').find('#durasi').val(),
     }
 
     let request = await fetch('<?= route('admin/kuis/update') ?>',{
@@ -270,6 +281,7 @@ function fetchToTable(data = false)
                 <b>${val.post_title}</b>
                 <br>
                 Jumlah Max. Peserta : ${val.max_participant ? val.max_participant : '-'} <br>
+                Durasi : ${val.durasi ? val.durasi + ' Menit' : '-'} <br>
                 <a href="<?= base_url() ?>/admin/kuis/view/${val.id}" class="act-btn jawaban-btn"><i class="fa fa-eye"></i> Detail</a> |
                 <a href="javascript:void(0)" onclick="fetchPesertaKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalPeserta"><i class="fa fa-eye"></i> Daftar Peserta</a> |
                 <a href="javascript:void(0)" onclick="fetchEditKuis(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |

@@ -359,7 +359,7 @@ function fetchToTable(data = false)
     $('.table-soal > tbody').html('')
     if(data.length == 0)
     {
-        $('.table-soal > tbody').html('<tr><td colspan="3"><i>Tidak ada data!</i></td></tr>')
+        $('.table-soal > tbody').html('<tr><td colspan="5"><i>Tidak ada data!</i></td></tr>')
     }
 
     var no = 1;

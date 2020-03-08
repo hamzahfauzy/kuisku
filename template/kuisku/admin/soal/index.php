@@ -9,6 +9,7 @@ $this->js = [
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
+<input type="file" name="file" id="import_file" accept=".xls,.xlsx,.ods" onchange="importSoal(this)" style="display:none;">
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
@@ -22,6 +23,7 @@ $this->js = [
                 <div class="table-panel">
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus"></i> Tambah</button>
+                        <button class="btn btn-danger" id="btn-import" onclick="import_file.click()"><i class="fa fa-upload"></i> Import Soal</button>
                     </div>
                     <div class="panel-content not-grow">
                         <div class="form-inline">
@@ -611,6 +613,59 @@ function toggleJawaban(id,el)
         document.querySelector('.jawaban-'+id).style.display = 'none'
         el.innerHTML = '<i class="fa fa-eye"></i> Lihat'
     }
+}
+
+async function importSoal(el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengimport data soal ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            var btnImport = document.querySelector('#btn-import');
+            btnImport.innerHTML = "Mengimport..."
+            var data = new FormData()
+            data.append('id', '<?= $kuis->id ?>')
+            data.append('file', el.files[0])
+
+            let request = await fetch('<?= route('admin/question/import') ?>',{
+                method :'POST',
+                body   : data,
+            })
+
+            el.value = ''
+
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat validasi</a>'
+                })
+
+                btnImport.innerHTML = "<i class='fa fa-upload'></i> Import Soal"
+            }
+            else
+            {
+                Swal.fire(
+                    'Imported!',
+                    'Soal Berhasil di import.',
+                    'success'
+                )
+
+                btnImport.innerHTML = "<i class='fa fa-upload'></i> Import Soal"
+                loadData()
+            }
+        }
+    })
 }
 
 loadData()

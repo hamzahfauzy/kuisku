@@ -860,6 +860,8 @@ async function importParticipant(el)
                     text: 'Something went wrong!',
                     footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat validasi</a>'
                 })
+
+                btnImport.innerHTML = "<i class='fa fa-upload'></i> Import Soal"
             }
             else
             {

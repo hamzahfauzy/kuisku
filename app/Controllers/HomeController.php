@@ -11,6 +11,17 @@ class HomeController
 
     function index()
     {
+        return [
+            'soal' => 0, 
+            'kuis' => 0,
+            'peserta' => 0,
+            'kategori' => 0,
+            'total' => 0
+        ];
+    }
+
+    function statistic()
+    {
         if(session()->user()->user_level == 'master')
         {
 
@@ -44,13 +55,8 @@ class HomeController
                 'total' => $total
             ];
         }
-        return [
-            'soal' => 0, 
-            'kuis' => 0,
-            'peserta' => 0,
-            'kategori' => 0,
-            'total' => 0
-        ];
+
+        return [];
     }
 
     function setting()

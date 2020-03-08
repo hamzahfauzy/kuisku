@@ -8,6 +8,11 @@ return [
         'return'   => 'page:index'
     ],
 
+    'statistic' => [
+        'callback' => 'HomeController@statistic',
+        'return'   => 'json'
+    ],
+
     'change-password' => [
         'callback' => 'HomeController@changePassword',
         'return'   => 'json'
@@ -232,6 +237,12 @@ return [
     'admin/question/insert' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@insert',
+        'return'   => 'json'
+    ],
+
+    'admin/question/import' => [
+        'middleware' => 'Admin',
+        'callback' => 'SoalController@importSoal',
         'return'   => 'json'
     ],
 

@@ -82,12 +82,12 @@ class KuisController
             // $message = "Informasi Ujian, website ".base_url().", username: ".$user->user_login.", password: ".$password.", waktu mulai: ".$waktu_mulai.", waktu selesai: ".$waktu_selesai;
             $customer = session()->user()->customer();
             $nama = "PT. Kawasan Industri Nusantara";
-            $email = $user->user_login;
+            $email = $participant->user_login;
             $email = str_replace('@','[at]',$email);
             $message = "Info Test ".$nama.", Link: s.id/eCQGX, Email: ".$email.", Sandi: ".$password.", masuk untuk melihat jadwal ujian";
 
             $sms = new ZSms;
-            $response[] = $sms->send($user->meta('no_hp'),$message);
+            $response[] = $sms->send($participant->meta('no_hp'),$message);
         }
 
         return ['status' => 1,'message' => $response];

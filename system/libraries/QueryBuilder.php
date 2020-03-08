@@ -182,6 +182,14 @@ class QueryBuilder
 		}
 	}
 
+	function runCount()
+	{
+		$sql = str_replace("SELECT *","SELECT COUNT(*) AS COUNT_TOTAL",$this->sql);
+		$rows = $this->connection->query($sql) or showError($this->connection->error,'mysql');
+		$rows = $rows->fetch_object();
+        return $rows->COUNT_TOTAL;
+	}
+
 
 
 }

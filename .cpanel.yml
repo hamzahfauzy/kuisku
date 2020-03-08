@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/tmcindonesia
-    - /bin/cp -R * $DEPLOYPATH
+    - /bin/cp -R /home/tmcindonesia/repositories/kuisku $DEPLOYPATH

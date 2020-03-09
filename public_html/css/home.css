@@ -319,6 +319,8 @@ p {
 
   .question-navigation-show {
 	  width: 300px;
+	  overflow: auto;
+      padding-bottom: 60px;
   }
 
   .question-navigation-panel-show {

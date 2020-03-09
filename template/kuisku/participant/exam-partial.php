@@ -10,25 +10,7 @@
             <div class="content-wrapper" style="font-size:16px;line-height:2;">
             <form method="post">
                 <input type="hidden" name="exam" value="1">
-                <div class="exam-question">
-                    <div class="container">
-                        <!-- <h3><?= $s->post_title ?></h3>
-                        <a href="#"><i class="fa fa-tag"></i>
-                        <?php 
-                        // foreach($s->categories() as $category):
-                        //     echo $category->category->category_name;
-                        //     if($category != end($s->categories))
-                        //         echo ",";
-                        // endforeach; 
-                        ?>
-                        </a>
-                        <hr> -->
-                        <?= $s->post_content ?>
-                        <br>
-                        <hr>
-                    </div>
-                </div>
-                <div class="container">
+                <div class="container-fluid">
                     <div class="exam-options row">
                         <?php foreach($jwb as $answer): ?>
                         <div class="inputGroup col-sm-12 col-md-6">
@@ -39,7 +21,7 @@
                     </div>
                     <br>
                 </div>
-                <div class="finish-section container">
+                <div class="finish-section container-fluid">
                     <?php if($no != 1): ?>
                     <a href="<?= route('participant/exam-partial/'.($no-1)) ?>" data-page="<?=$no-1?>" class="btn btn-success" onclick="prevQuestion(this)"><i class="fa fa-arrow-left fa-fw"></i> Sebelumnya</a>
                     <?php endif ?>

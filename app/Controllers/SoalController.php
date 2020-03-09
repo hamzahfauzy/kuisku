@@ -327,11 +327,25 @@ class SoalController
                     }
                 }
 
-                if($_category == 0) continue;
+                if($_category == 0){
+                    $category = new Category;
+                    $category_id = $category->save([
+                        'category_name' => $kategori,
+                        'category_description' => $kategori
+                    ]);
+
+                    $category_user = new CategoryUser;
+                    $category_user->save([
+                        'user_id' => session()->user()->id,
+                        'category_id' => $category_id
+                    ]);
+                }
+                else
+                    $category_id = $_category->id;
 
                 $cat = new CategoryPost;
                 $cat->save([
-                    'category_id' => $_category->id,
+                    'category_id' => $category_id,
                     'post_id' => $question_id,
                 ]);
             }

@@ -10,6 +10,13 @@
             <div class="content-wrapper" style="font-size:16px;line-height:2;">
             <form method="post">
                 <input type="hidden" name="exam" value="1">
+                <div class="exam-question">
+                    <div class="container-fluid">
+                        <?= $s->post_content ?>
+                        <br>
+                        <hr>
+                    </div>
+                </div>
                 <div class="container-fluid">
                     <div class="exam-options row">
                         <?php foreach($jwb as $answer): ?>
@@ -21,7 +28,7 @@
                     </div>
                     <br>
                 </div>
-                <div class="finish-section container-fluid">
+                <div class="finish-section container">
                     <?php if($no != 1): ?>
                     <a href="<?= route('participant/exam-partial/'.($no-1)) ?>" data-page="<?=$no-1?>" class="btn btn-success" onclick="prevQuestion(this)"><i class="fa fa-arrow-left fa-fw"></i> Sebelumnya</a>
                     <?php endif ?>

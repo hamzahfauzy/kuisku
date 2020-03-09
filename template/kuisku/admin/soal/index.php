@@ -205,6 +205,7 @@ CKEDITOR.replace( 'editor3' , {
 
 async function loadData()
 {
+    $('.table-soal > tbody').html('<tr><td colspan="5"><i>Loading...</i></td></tr>')
     let request = await fetch('<?= route('admin/question/get') ?>')
     let response = await request.json()
     dataSoal = response.questions
@@ -670,5 +671,7 @@ async function importSoal(el)
     })
 }
 
-loadData()
+window.onload = function(){
+    loadData()
+}
 </script>

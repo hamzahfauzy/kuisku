@@ -230,7 +230,7 @@ return [
 
     'admin/question/get' => [
         'middleware' => 'Admin',
-        'callback' => 'SoalController@index',
+        'callback' => 'SoalController@get',
         'return'   => 'json'
     ],
 

@@ -11,6 +11,15 @@ class SoalController
 {
     function index()
     {
+        $category_user = CategoryUser::where('user_id',session()->user()->id)->get();
+        $categories = [];
+        foreach($category_user as $category)
+            $categories[] = $category->category();
+        return ['categories' => $categories];
+    }
+
+    function get()
+    {
         $questions = Soal::where('post_author_id',session()->get('id'))->get();
         foreach($questions as $question)
         {
@@ -18,11 +27,7 @@ class SoalController
             $question->answers();
         }
         
-        $category_user = CategoryUser::where('user_id',session()->user()->id)->get();
-        $categories = [];
-        foreach($category_user as $category)
-            $categories[] = $category->category();
-        return ['questions' => $questions, 'categories' => $categories];
+        return ['questions' => $questions];
     }
 
     function find($id)

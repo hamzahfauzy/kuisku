@@ -455,5 +455,7 @@ function filterPeserta(keyword)
     fetchToTable(data)
 }
 
-loadData()
+window.onload = function(){
+    loadData()
+}
 </script>

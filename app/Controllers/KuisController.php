@@ -618,6 +618,12 @@ class KuisController
                     else
                     {
                         $participant_id = $_participant->id;
+
+                        $user_meta = UserMeta::where('user_id',$participant_id)->where('meta_key','no_hp')->first();
+                        $user_meta->save([
+                            'meta_value' => $no_hp
+                        ]);
+
                         $_customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$participant_id)->first();
                         if(!$_customerParticipant)
                         {

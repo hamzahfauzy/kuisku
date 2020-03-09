@@ -315,12 +315,23 @@ class SoalController
                     ]);
                 }
 
-                $category = Category::where('category_name',$kategori)->first();
-                if(!$category) continue;
+                $categories = Category::where('category_name',$kategori)->get();
+                if(empty($categories)) continue;
+                $_category = 0;
+                foreach($categories as $category)
+                {
+                    if($category->user()->user_id == session()->user()->id)
+                    {
+                        $_category = $category;
+                        break;
+                    }
+                }
+
+                if($_category == 0) continue;
 
                 $cat = new CategoryPost;
                 $cat->save([
-                    'category_id' => $category->id,
+                    'category_id' => $_category->id,
                     'post_id' => $question_id,
                 ]);
             }

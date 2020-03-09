@@ -9,7 +9,7 @@ $this->js = [
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
-<input type="file" name="file" id="import_file" accept=".xls,.xlsx,.ods" onchange="importSoal(this)" style="display:none;">
+<input type="file" name="file" id="import_file" accept=".xls,.xlsx,.csv,.ods" onchange="importSoal(this)" style="display:none;">
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">

@@ -82,7 +82,7 @@ class IndexController
                 ];
             }
 
-            print_r($soal);
+            // print_r($soal);
             // return $soal;
 
             if(empty($all_soal))

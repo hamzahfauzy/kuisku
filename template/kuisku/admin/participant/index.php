@@ -383,9 +383,8 @@ async function kirimNotifikasi(user_id, el)
                     'Notifikasi Berhasil di kirim.',
                     'success'
                 )
-
-                loadData()
             }
+            el.innerHTML = '<i class="fa fa-send"></i> Kirim Notifikasi'
         }
     })
 }

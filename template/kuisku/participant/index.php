@@ -31,10 +31,10 @@
                 <?php if($currentSession): ?>
                     <?php if(!$currentSession->partSesi() || $currentSession->partSesi->status == 1 || (isset($currentSession->status_durasi) && $currentSession->status_durasi == 1)): ?>
                     <?php $kuis = $currentSession->sesi->kuis(); ?>
-                    <?php if($currentSession->partSesi->status == 1): ?>
-                    <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
-                    <?php else: ?>
+                    <?php if($currentSession->partSesi && $currentSession->partSesi->status == 2): ?>
                     <div class="alert alert-success">Anda sudah menyelesaikan Ujian</div>
+                    <?php else: ?>
+                    <a href="<?= route('participant/exam') ?>" class="btn btn-success">Ikuti Ujian</a> <br><br>
                     <?php endif; ?>
                     <table class="table table-bordered">
                         <tr>

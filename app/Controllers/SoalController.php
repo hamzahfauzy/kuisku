@@ -271,6 +271,7 @@ class SoalController
             $Reader->ChangeSheet(0);
             foreach($Reader as $key => $row)
             {
+                if($key == 0) continue;
                 $deskripsi = $row[0];
                 $kategori  = $row[1];
                 $jawaban_1 = $row[2];
@@ -294,13 +295,13 @@ class SoalController
 
                 for($i=1;$i<=4;$i++)
                 {
-                    $jwb_excerpt = strWordCut($jawaban_{$i},100);
+                    $jwb_excerpt = strWordCut(${'jawaban_'.$i},100);
                     $answer = new Jawaban;
                     $answer->save([
                         'post_author_id' => session()->get('id'),
-                        'post_title'     => $jawaban_{$i},
-                        'post_content'   => $jawaban_{$i},
-                        'post_excerpt'   => $jawaban_{$i},
+                        'post_title'     => ${'jawaban_'.$i},
+                        'post_content'   => '<p>'.${'jawaban_'.$i}.'</p>',
+                        'post_excerpt'   => ${'jawaban_'.$i},
                         'post_parent_id' => $question_id,
                         'post_status'    => 1,
                         'post_as'        => $i == 1 ? 1 : 0,

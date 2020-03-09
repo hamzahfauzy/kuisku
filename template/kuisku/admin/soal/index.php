@@ -32,6 +32,7 @@ $this->js = [
                         </div>
                     </div>
                 </div>
+                <div class="table-responsive">
                 <table class="table table-bordered table-striped table-soal">
                     <thead>
                         <tr>
@@ -48,6 +49,7 @@ $this->js = [
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
@@ -374,7 +376,7 @@ function fetchToTable(data = false)
         answer += '</ul>'
         $('.table-soal > tbody').append(`<tr>
             <td>${no++}</td>
-            <td style="white-space:nowrap;">
+            <td>
                 ${val.post_excerpt}
             </td>
             <td style="white-space:nowrap;">
@@ -389,7 +391,7 @@ function fetchToTable(data = false)
                 ${answer}
                 </div>
             </td>
-            <td>
+            <td style="white-space:nowrap;">
                 <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-cog"></i> Manajemen Jawaban</a> |
                 <a href="javascript:void(0)" onclick="fetchEditSoal(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deleteSoal(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>

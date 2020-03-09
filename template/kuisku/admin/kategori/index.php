@@ -114,6 +114,7 @@ $this->js = [
 var dataKategori = {};
 async function loadData()
 {
+    $('.table-kategori > tbody').html('<tr><td colspan="4"><i>Loading...</i></td></tr>')
     let request = await fetch('<?= route('admin/category/get') ?>')
     let response = await request.json()
     dataKategori = response
@@ -206,15 +207,10 @@ function fetchToTable(data = false)
 {
     if(!data)
         data = dataKategori
-    $('.table-kategori > tbody').html('<tr><td colspan="4"><i>Loading...</i></td></tr>')
     if(data.length == 0)
-    {
         $('.table-kategori > tbody').html('<tr><td colspan="4"><i>Tidak ada data!</i></td></tr>')
-    }
     else
-    {
         $('.table-kategori > tbody').html('')
-    }
 
     var no = 1
     data.forEach(val => {

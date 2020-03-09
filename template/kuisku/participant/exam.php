@@ -37,8 +37,7 @@ var x = setInterval(function() {
     var t = deadline - now; 
     if (t <= 0) { 
         clearInterval(x); 
-        finishExam()
-        // location=location
+        location='<?= route('participant/exam/finish') ?>'
     }
     var days = Math.floor(t / (1000 * 60 * 60 * 24)); 
     var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60)); 

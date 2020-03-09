@@ -383,7 +383,6 @@ async function kirimNotifikasi(user_id, el)
     }).then(async (result) => {
         if (result.value) {
             el.innerHTML = "Loading..."
-            el.removeAttribute("onclick")
             let request = await fetch('<?= route('admin/participant/notifikasi-peserta') ?>',{
                 method :'POST',
                 headers : {
@@ -409,9 +408,8 @@ async function kirimNotifikasi(user_id, el)
                     'Notifikasi Berhasil di kirim.',
                     'success'
                 )
-
-                loadData()
             }
+            el.innerHTML = '<i class="fa fa-send"></i> Kirim Notifikasi'
         }
     })
 }

@@ -178,7 +178,7 @@ var dataPeserta   = {};
 function generatePassword(el)
 {
     el = $(el).find('#password')
-    var randomstring = Math.random().toString(36).slice(-10);
+    var randomstring = Math.random().toString(36).slice(0,4);
     el.val(randomstring)
 }
 

@@ -33,21 +33,22 @@ $waktu_selesai = str_replace(' ','T',$waktu_selesai);
 <script>
 var deadline = new Date("<?=$waktu_selesai?>").getTime(); 
 var x = setInterval(function() { 
-var now = new Date().getTime(); 
-var t = deadline - now; 
-var days = Math.floor(t / (1000 * 60 * 60 * 24)); 
-var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60)); 
-var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60)); 
-var seconds = Math.floor((t % (1000 * 60)) / 1000); 
-days = days < 10 ? "0"+days : days;
-hours = hours < 10 ? "0"+hours : hours;
-minutes = minutes < 10 ? "0"+minutes : minutes;
-seconds = seconds < 10 ? "0"+seconds : seconds;
-document.getElementById("countdown").innerHTML = hours + ":" + minutes + ":" + seconds; 
+    var now = new Date().getTime(); 
+    var t = deadline - now; 
     if (t <= 0) { 
         clearInterval(x); 
-        location=location
-    } 
+        finishExam()
+        // location=location
+    }
+    var days = Math.floor(t / (1000 * 60 * 60 * 24)); 
+    var hours = Math.floor((t%(1000 * 60 * 60 * 24))/(1000 * 60 * 60)); 
+    var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60)); 
+    var seconds = Math.floor((t % (1000 * 60)) / 1000); 
+    days = days < 10 ? "0"+days : days;
+    hours = hours < 10 ? "0"+hours : hours;
+    minutes = minutes < 10 ? "0"+minutes : minutes;
+    seconds = seconds < 10 ? "0"+seconds : seconds;
+    document.getElementById("countdown").innerHTML = hours + ":" + minutes + ":" + seconds;  
 }, 1000); 
 
 var currentQuestion = 1

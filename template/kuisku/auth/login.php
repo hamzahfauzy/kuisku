@@ -39,7 +39,7 @@
               </div> -->
               <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit"><i class="fa fa-sign-in"></i> Sign in</button>
               <hr class="my-4">
-              <center>Powered By Z-Techno</center>
+              <center>TMC Indonesia</center>
               <!-- <button class="btn btn-lg btn-google btn-block text-uppercase" type="submit"><i class="fa fa-google mr-2"></i> Sign in with Google</button>
               <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="submit"><i class="fa fa-facebook-f mr-2"></i> Sign in with Facebook</button> -->
             </form>

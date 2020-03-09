@@ -66,6 +66,8 @@ class IndexController
 
             foreach($kuis->categories() as $category)
             {
+                if($category->jumlah_soal == 0)
+                    continue;
                 $_s = [];
                 foreach($category->soal()  as $s)
                 {
@@ -80,7 +82,7 @@ class IndexController
                 ];
             }
 
-            // print_r($soal);
+            print_r($soal);
             // return $soal;
 
             if(empty($all_soal))

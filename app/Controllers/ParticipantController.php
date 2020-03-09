@@ -176,7 +176,7 @@ class ParticipantController
                             'participant_id' => $participant_id
                         ]);
 
-                        return $this->index();
+                        return $this->get();
                     }
                 }
             }
@@ -222,7 +222,7 @@ class ParticipantController
                     ]);
                 }
 
-                return $this->index();
+                return $this->get();
             }
             
         }

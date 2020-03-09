@@ -315,19 +315,9 @@ class SoalController
                     ]);
                 }
 
-                $categories = Category::where('category_name',$kategori)->get();
-                if(empty($categories)) continue;
-                $_category = 0;
-                foreach($categories as $category)
+                $categories = Category::where('category_name','LIKE','%'.$kategori.'%')->get();
+                if(empty($categories))
                 {
-                    if($category->user()->user_id == session()->user()->id)
-                    {
-                        $_category = $category;
-                        break;
-                    }
-                }
-
-                if($_category == 0){
                     $category = new Category;
                     $category_id = $category->save([
                         'category_name' => $kategori,
@@ -341,7 +331,35 @@ class SoalController
                     ]);
                 }
                 else
-                    $category_id = $_category->id;
+                {
+                    $_category = 0;
+                    foreach($categories as $category)
+                    {
+                        if($category->user()->user_id == session()->user()->id)
+                        {
+                            $_category = $category;
+                            break;
+                        }
+                    }
+
+                    if(is_object($_category))
+                        $category_id = $_category->id;
+                    else
+                    {
+                        $category = new Category;
+                        $category_id = $category->save([
+                            'category_name' => $kategori,
+                            'category_description' => $kategori
+                        ]);
+
+                        $category_user = new CategoryUser;
+                        $category_user->save([
+                            'user_id' => session()->user()->id,
+                            'category_id' => $category_id
+                        ]);
+                    }
+                        
+                }
 
                 $cat = new CategoryPost;
                 $cat->save([

@@ -1,6 +1,6 @@
 <footer>
     <br><br>
     <center>
-    <p>&copy; copyright Z-Techno RnD 2019</p>
+    <p>TMC Indonesia</p>
     </center>
 </footer>

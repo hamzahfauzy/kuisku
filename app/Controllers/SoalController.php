@@ -79,7 +79,7 @@ class SoalController
                         'post_id' => $question_id,
                     ]);
                 }
-                return $this->index();
+                return $this->get();
             }
             
         }
@@ -167,7 +167,7 @@ class SoalController
                         'post_id' => $request->id,
                     ]);
                 }
-                return $this->index();
+                return $this->get();
             }
             
         }
@@ -216,7 +216,7 @@ class SoalController
         if($request)
         {
             Soal::delete($request->id);
-            return $this->index();
+            return $this->get();
         }
 
         return ['status' => false];

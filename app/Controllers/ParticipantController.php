@@ -238,7 +238,7 @@ class ParticipantController
             $customer = session()->user()->customer();
             $customerParticipant = CustomerParticipant::where('customer_id',$customer->id)->where('participant_id',$request->id)->first();
             CustomerParticipant::delete($customerParticipant->id);
-            return $this->index();
+            return $this->get();
         }
 
         return ['status' => false];

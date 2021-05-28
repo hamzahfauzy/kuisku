@@ -78,7 +78,7 @@ class HomeController
             $file_name = $_FILES['file']['name'];
             $file_name_array = explode(".", $file_name);
             $extension = end($file_name_array);
-            $new_image_name  = rand() . '.' . $extension;
+            $new_image_name  = time() . "" . rand() . '.' . $extension;
             chmod('uploads', 0777);
             $allowed_extension = array("jpg", "gif", "png");
             if(in_array($extension, $allowed_extension))

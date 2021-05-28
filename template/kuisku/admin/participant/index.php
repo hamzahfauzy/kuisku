@@ -8,6 +8,9 @@ $this->js = [
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
+<form action="<?= route('admin/participant/import') ?>" id="formImport" method="post" enctype="multipart/form-data" style="display:none;">
+<input type="file" name="file" id="import_file" accept=".xls,.xlsx" onchange="formImport.submit()">
+</form>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
@@ -21,6 +24,7 @@ $this->js = [
                 <div class="table-panel">
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus"></i> Tambah</button>
+                        <button class="btn btn-success" onclick="import_file.click()"><i class="fa fa-upload"></i> Import</button>
                     </div>
                     <div class="panel-content not-grow">
                         <div class="form-inline">

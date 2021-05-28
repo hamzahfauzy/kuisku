@@ -266,6 +266,12 @@ return [
         'return'     => 'json'
     ],
 
+    'admin/participant/import' => [
+        'middleware' => 'Admin',
+        'callback'   => 'ParticipantController@import',
+        'return'     => 'json'
+    ],
+
     'admin/participant/get' => [
         'middleware' => 'Admin',
         'callback' => 'ParticipantController@index',

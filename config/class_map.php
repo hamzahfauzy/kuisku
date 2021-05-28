@@ -25,6 +25,7 @@ return [
     'UserMeta'       => 'system/models/UserMeta',
 
     'PHPMailer\PHPMailer\PHPMailer' => 'system/vendor/PHPMailer/src/PHPMailer',
-    'PHPMailer\PHPMailer\SMTP' => 'system/vendor/PHPMailer/src/SMTP',
+    'PHPMailer\PHPMailer\SMTP'      => 'system/vendor/PHPMailer/src/SMTP',
+    'SpreadsheetReader'             => 'system/vendor/spreadsheet-reader/SpreadsheetReader',
 
 ];

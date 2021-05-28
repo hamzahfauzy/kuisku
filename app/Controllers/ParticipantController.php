@@ -3,6 +3,7 @@ namespace App\Controllers;
 use User;
 use ZMail;
 use TemplatePartial;
+use SpreadsheetReader;
 use App\Models\{CustomerParticipant, Participant};
 
 class ParticipantController
@@ -26,6 +27,27 @@ class ParticipantController
         if($send != 1)
             return ['status' => false, 'message' => $send];
         return ['status' => 'success'];
+    }
+
+    function import()
+    {
+        $Reader    = new SpreadsheetReader('uploads/15830610461575963163.xlsx');
+        print_r($Reader);
+        return;
+
+        $file      = $_FILES['file']['tmp_name'];
+        $file_name = $_FILES['file']['name'];
+        $file_name_array = explode(".", $file_name);
+        $allowedFileType = ['application/vnd.ms-excel','text/xls','text/xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        $extension = end($file_name_array);
+        if(in_array($_FILES["file"]["type"],$allowedFileType)){
+            $new_file_name  = time() . "" . rand() . '.' . $extension;
+            $targetPath = 'uploads/'.$new_file_name;
+            copy($file, $targetPath);
+            $Reader    = new SpreadsheetReader($targetPath);
+            
+            return $Reader;
+        }
     }
 
     function index()

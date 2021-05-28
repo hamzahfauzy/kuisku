@@ -186,7 +186,7 @@ class Boot
                     }
                     elseif($explode_return[0] == 'partial')
                     {
-                        $page = $pages[$explode_return[1]];
+                        $page = isset($pages[$explode_return[1]]) ? $pages[$explode_return[1]] : '';
                         if($page)
                             $filename = str_replace('.','/',$page['file']);
                         else

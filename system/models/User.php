@@ -19,7 +19,10 @@ class User extends Model
             return $return;
         }
 
-        return UserMeta::where('user_id',$this->id)->where('meta_key',$param)->first()->meta_value;
+        $user_meta = UserMeta::where('user_id',$this->id)->where('meta_key',$param)->first();
+        if($user_meta)
+            return $user_meta->meta_value;
+        return '';
     }
 
     function customer()

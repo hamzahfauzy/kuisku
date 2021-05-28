@@ -79,7 +79,6 @@ $this->js = [
 <script>
 function uploadLogo(el)
 {
-    console.log(el.files)
     Swal.fire({
         title: 'Konfirmasi ?',
         text: "Apakah anda yakin akan mengupload logo ini ?",

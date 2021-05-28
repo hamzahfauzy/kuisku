@@ -135,7 +135,7 @@ class Model
 		self::$where_queue = [];
 		self::$_orderby = "";
 		self::$_limit = "";
-		return count(self::$QueryBuilder->run());
+		return self::$QueryBuilder->runCount();
 	}
 
 	public static function get()

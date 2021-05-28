@@ -14,7 +14,10 @@ class Post extends Model {
             return $return;
         }
 
-        return PostMeta::where('post_id',$this->id)->where('meta_key',$key)->first()->meta_value;
+        $post_meta = PostMeta::where('post_id',$this->id)->where('meta_key',$key)->first();
+        if($post_meta)
+            return $post_meta->meta_value;
+        return 0;
     }
 
     function comment($id = false)

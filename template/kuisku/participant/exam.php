@@ -7,13 +7,23 @@ $this->js = [
     asset('js/sweetalert2.min.js'),
 ];
 
-$waktu_selesai = str_replace(' ','T',$sesi->sesi->waktu_selesai);
+$waktu_selesai = str_replace(' ','T',$waktu_selesai);
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
-<div class="exam-panel">
+<div class="exam-panel">    
     <div class="exam-container">
         <span>Sisa Waktu</span>
         <h4 style="margin:0" id="countdown"></h4>
+    </div>
+</div>
+<div class="question-navigation-panel" onclick="showQuestionNavigation()">
+<a href="javascript:void(0)" class="caret-toggle"><i class="fa fa-caret-left"></i></a>
+</div>
+<div class="question-navigation">
+    <div class="container-fluid">
+        <div class="row question-nav-item">
+            
+        </div>
     </div>
 </div>
 <div class="container-fluid exam-html">
@@ -34,13 +44,33 @@ hours = hours < 10 ? "0"+hours : hours;
 minutes = minutes < 10 ? "0"+minutes : minutes;
 seconds = seconds < 10 ? "0"+seconds : seconds;
 document.getElementById("countdown").innerHTML = hours + ":" + minutes + ":" + seconds; 
-    if (t < 0) { 
+    if (t <= 0) { 
         clearInterval(x); 
         location=location
     } 
 }, 1000); 
 
-function loadExam(url = false)
+var currentQuestion = 1
+
+function showQuestionNavigation()
+{
+    var navToggle = document.querySelector('.question-navigation-panel')
+    navToggle.classList.toggle("question-navigation-panel-show");
+
+    if(navToggle.classList.contains("question-navigation-panel-show"))
+    {
+        document.querySelector('.caret-toggle').innerHTML = `<i class="fa fa-caret-right"></i>`
+    }
+    else
+    {
+        document.querySelector('.caret-toggle').innerHTML = `<i class="fa fa-caret-left"></i>`
+    }
+
+    var navPanel = document.querySelector('.question-navigation')
+    navPanel.classList.toggle("question-navigation-show");
+}
+
+function loadExam(url = false, page = 1)
 {
     if(!url)
         url = '<?= route('participant/exam-partial') ?>'
@@ -48,6 +78,7 @@ function loadExam(url = false)
     .then(res => res.text())
     .then(res => {
         document.querySelector('.exam-html').innerHTML = res
+        loadNavigation(page)
     })
 
 }
@@ -63,7 +94,7 @@ async function sendAnswer(jawaban, soal)
     })
 
     let response = await request.json()
-    console.log(response)
+    loadNavigation(currentQuestion)
 }
 
 function finishExam()
@@ -86,13 +117,36 @@ function finishExam()
 function nextQuestion(el)
 {
     event.preventDefault()
-    loadExam(el.href)
+    currentQuestion = el.dataset.page
+    loadExam(el.href, el.dataset.page)
 }
 
 function prevQuestion(el)
 {
     event.preventDefault()
-    loadExam(el.href)
+    currentQuestion = el.dataset.page
+    loadExam(el.href, el.dataset.page)
+}
+
+function loadNavigation(page = 1)
+{
+    fetch("<?= base_url() ?>/participant/load-navigation?page="+page)
+    .then(res => res.json())
+    .then(res => {
+        console.log(res)
+        document.querySelector('.question-nav-item').innerHTML = ''
+        for(i=0;i<res.numOf;i++){
+            var number = i+1
+            var answered = res.answered.find(e => e.question_id == res.s[i].id)
+            answered = answered != undefined ? 'btn-success' : 'btn-secondary'
+            answered = number == res.no ? 'btn-primary' : answered
+            document.querySelector('.question-nav-item').innerHTML += `
+            <div class="col-sm-4" style="margin-bottom:10px">
+                <a href="<?= base_url() ?>/participant/exam-partial/${number}" onclick="nextQuestion(this)" data-page="${number}" class="btn btn-block ${answered}">${number}</a>
+            </div>
+            `
+        }
+    })
 }
 
 loadExam()

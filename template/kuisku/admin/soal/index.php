@@ -9,6 +9,7 @@ $this->js = [
 ];
 ?>
 <link rel="stylesheet" href="<?= asset('css/wordpress-admin.css') ?>">
+<input type="file" name="file" id="import_file" accept=".xls,.xlsx,.ods" onchange="importSoal(this)" style="display:none;">
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 col-md-6">
@@ -22,6 +23,7 @@ $this->js = [
                 <div class="table-panel">
                     <div class="panel-content">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-plus"></i> Tambah</button>
+                        <button class="btn btn-danger" id="btn-import" onclick="import_file.click()"><i class="fa fa-upload"></i> Import Soal</button>
                     </div>
                     <div class="panel-content not-grow">
                         <div class="form-inline">
@@ -30,26 +32,31 @@ $this->js = [
                         </div>
                     </div>
                 </div>
+                <div class="table-responsive">
                 <table class="table table-bordered table-striped table-soal">
                     <thead>
                         <tr>
                             <th width="20px">#</th>
                             <th>Soal</th>
+                            <th>Kategori</th>
+                            <th>Jawaban</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="3"><i>Tidak ada data!</i></td>
+                            <td colspan="5"><i>Tidak ada data!</i></td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -90,7 +97,7 @@ $this->js = [
 </div>
 
 <!-- Modal Edit -->
-<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalEdit" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -132,7 +139,7 @@ $this->js = [
 </div>
 
 <!-- Modal Jawaban -->
-<div class="modal fade" id="modalJawaban" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalJawaban" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -144,6 +151,7 @@ $this->js = [
       <div class="modal-body">
         <form method="post" id="answerForm" action="<?= route('admin/question/insert') ?>">
             <input type="hidden" name="id" id="id">
+            <input type="hidden" name="jawaban_id" id="jawaban_id" value="0">
             <div class="form-group">
                 <label for="description">Deskripsi</label>
                 <textarea name="editor3" id="editor3" class="form-control editor3"></textarea>
@@ -178,25 +186,26 @@ var dataSoal   = {};
 var dataAnswer = {};
 
 CKEDITOR.replace( 'editor', {
-  height: 300,
+  height: 150,
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
 
 CKEDITOR.replace( 'editor2', {
-  height: 300,
+  height: 150,
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
 
 CKEDITOR.replace( 'editor3' , {
-  height: 300,
+  height: 100,
   filebrowserUploadUrl: "<?=base_url()?>/admin/question/image-upload",
   filebrowserUploadMethod:"form"
 });
 
 async function loadData()
 {
+    $('.table-soal > tbody').html('<tr><td colspan="5"><i>Loading...</i></td></tr>')
     let request = await fetch('<?= route('admin/question/get') ?>')
     let response = await request.json()
     dataSoal = response.questions
@@ -307,6 +316,7 @@ async function saveAnswer()
 {
     var data = {
         post_parent_id:$('#answerForm').find('#id').val(),
+        jawaban_id:$('#answerForm').find('#jawaban_id').val(),
         // post_content:$('#answerForm').find('#description').val(),
         post_content:CKEDITOR.instances.editor3.getData(),
         skor:$('#skor').val(),
@@ -338,7 +348,7 @@ async function saveAnswer()
             'Jawaban berhasil disimpan.',
             'success'
         )
-        // $('#answerForm').find('#description').val("")
+        $('#answerForm').find('#jawaban_id').val(0)
         $('#skor').val("")
         CKEDITOR.instances.editor3.setData('')
         await fetchJawaban($('#answerForm').find('#id').val())
@@ -354,31 +364,38 @@ function fetchToTable(data = false)
     $('.table-soal > tbody').html('')
     if(data.length == 0)
     {
-        $('.table-soal > tbody').html('<tr><td colspan="3"><i>Tidak ada data!</i></td></tr>')
+        $('.table-soal > tbody').html('<tr><td colspan="5"><i>Tidak ada data!</i></td></tr>')
     }
 
     var no = 1;
     data.forEach(val => {
         var categories = val.categories.map(e => e.category.category_name ).join(', ')
-        var answer = "<ul>"
+        var answer = `<ul class="answer-list">`
         val.answers.forEach(val => {
-            answer += `<li>${val.post_content}</li>`
+            answer += `<li>${val.post_content} (Skor: ${val.post_as})</li>`
         })
         answer += '</ul>'
         $('.table-soal > tbody').append(`<tr>
             <td>${no++}</td>
             <td>
-                ${val.post_excerpt}<br>
+                ${val.post_excerpt}
+            </td>
+            <td style="white-space:nowrap;">
                 <div class="post-tag">
                     <i class="fa fa-tag"></i> ${categories}
                 </div>
-                <br>
-                <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-eye"></i> Jawaban</a> |
-                <a href="javascript:void(0)" onclick="fetchEditSoal(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
-                <a href="javascript:void(0)" onclick="deleteSoal(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
-                <hr>
+            </td>
+            <td style="white-space:nowrap;">
+                <a href="javascript:void(0)" onclick="toggleJawaban(${val.id},this)" class="act-btn" style="color:orange"><i class="fa fa-eye"></i> Lihat</a>
+                <div class="jawaban-${val.id}" style='display:none'>
                 <b>Jawaban</b>
                 ${answer}
+                </div>
+            </td>
+            <td style="white-space:nowrap;">
+                <a href="javascript:void(0)" onclick="fetchJawaban(${val.id})" class="act-btn jawaban-btn" data-toggle="modal" data-target="#modalJawaban"><i class="fa fa-cog"></i> Manajemen Jawaban</a> |
+                <a href="javascript:void(0)" onclick="fetchEditSoal(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
+                <a href="javascript:void(0)" onclick="deleteSoal(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
     })
@@ -424,6 +441,7 @@ async function fetchJawaban(id)
             <td>
                 ${val.post_content}
                 <a href="javascript:void(0)" class="act-btn jawaban-btn">${statusJawaban}</a> |
+                <a href="javascript:void(0)" onclick="editJawaban(${val.id})" class="act-btn edit-btn"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deleteJawaban(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
@@ -473,6 +491,16 @@ async function deleteSoal(id)
             }
         }
     })
+}
+
+async function editJawaban(id)
+{
+    let request = await fetch('<?= base_url() ?>/admin/question/answer/find/'+id)
+    let response = await request.json()
+    $('#answerForm').find('#id').val(response.post_parent_id)
+    $('#answerForm').find('#jawaban_id').val(response.id)
+    $('#answerForm').find('#skor').val(response.post_as)
+    CKEDITOR.instances.editor3.setData(response.post_content)
 }
 
 async function updateJawaban(id)
@@ -568,11 +596,82 @@ async function deleteJawaban(id)
 function filterSoal(keyword)
 {
     var data = dataSoal.filter(soal => {
-        return soal.post_title.includes(keyword) || soal.post_content.includes(keyword)
+        var categories = soal.categories.map(e => e.category.category_name ).join(', ')
+        return soal.post_title.includes(keyword) || soal.post_content.includes(keyword) || categories.includes(keyword)
     })
 
     fetchToTable(data)
 }
 
-loadData()
+function toggleJawaban(id,el)
+{
+    var status = document.querySelector('.jawaban-'+id).style.display
+    if(status == 'none')
+    {
+        document.querySelector('.jawaban-'+id).style.display = 'block'
+        el.innerHTML = '<i class="fa fa-eye"></i> Sembunyikan'
+    }
+    else
+    {
+        document.querySelector('.jawaban-'+id).style.display = 'none'
+        el.innerHTML = '<i class="fa fa-eye"></i> Lihat'
+    }
+}
+
+async function importSoal(el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengimport data soal ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            var btnImport = document.querySelector('#btn-import');
+            btnImport.innerHTML = "Mengimport..."
+            var data = new FormData()
+            data.append('id', '<?= $kuis->id ?>')
+            data.append('file', el.files[0])
+
+            let request = await fetch('<?= route('admin/question/import') ?>',{
+                method :'POST',
+                body   : data,
+            })
+
+            el.value = ''
+
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat validasi</a>'
+                })
+
+                btnImport.innerHTML = "<i class='fa fa-upload'></i> Import Soal"
+            }
+            else
+            {
+                Swal.fire(
+                    'Imported!',
+                    'Soal Berhasil di import.',
+                    'success'
+                )
+
+                btnImport.innerHTML = "<i class='fa fa-upload'></i> Import Soal"
+                loadData()
+            }
+        }
+    })
+}
+
+window.onload = function(){
+    loadData()
+}
 </script>

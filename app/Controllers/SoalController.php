@@ -4,10 +4,21 @@ use App\Models\{Soal,Jawaban};
 use Category;
 use PostMeta;
 use CategoryPost;
+use CategoryUser;
+use SpreadsheetReader;
 
 class SoalController
 {
     function index()
+    {
+        $category_user = CategoryUser::where('user_id',session()->user()->id)->get();
+        $categories = [];
+        foreach($category_user as $category)
+            $categories[] = $category->category();
+        return ['categories' => $categories];
+    }
+
+    function get()
     {
         $questions = Soal::where('post_author_id',session()->get('id'))->get();
         foreach($questions as $question)
@@ -15,8 +26,8 @@ class SoalController
             $question->categories();
             $question->answers();
         }
-        $categories = Category::get();
-        return ['questions' => $questions, 'categories' => $categories];
+        
+        return ['questions' => $questions];
     }
 
     function find($id)
@@ -76,6 +87,11 @@ class SoalController
         return ['status' => false];
     }
 
+    function getAnswer($id)
+    {
+        return Jawaban::find($id);
+    }
+
     function insertAnswer()
     {
         $request = request()->post();
@@ -84,14 +100,18 @@ class SoalController
             $validate = [
                 'post_parent_id' => ['required'],
                 'post_content'   => ['required'],
-                'skor'           => ['required']
             ];
+
+            $request->skor = $request->skor ? $request->skor : 0;
 
             $data = (array) $request;
             if(count(request()->validate($data, $validate)) == 0)
             {
                 $excerpt  = strWordCut($request->post_content,100);
-                $question = new Jawaban;
+                if($request->jawaban_id != 0)
+                    $question = Jawaban::where('id',$request->jawaban_id)->first();
+                else
+                    $question = new Jawaban;
                 $question_id = $question->save([
                     'post_author_id' => session()->get('id'),
                     'post_title'     => $request->post_content,
@@ -234,5 +254,78 @@ class SoalController
                 echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($function_number, '$url', '$message');</script>";
             }
         }
+    }
+
+    function importSoal()
+    {
+        $file      = $_FILES['file']['tmp_name'];
+        $file_name = $_FILES['file']['name'];
+        $file_name_array = explode(".", $file_name);
+        $allowedFileType = ['application/vnd.ms-excel','text/xls','text/xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        $extension = end($file_name_array);
+        // if(in_array($_FILES["file"]["type"],$allowedFileType)){
+            $request = request()->post();
+            $new_file_name  = time() . "" . rand() . '.' . $extension;
+            $targetPath = 'uploads/'.$new_file_name;
+            move_uploaded_file($file, $targetPath);
+            $Reader    = new SpreadsheetReader($targetPath);
+
+            $Sheets = $Reader->Sheets();
+            $ret = [];
+            $customer = session()->user()->customer();
+            $Reader->ChangeSheet(0);
+            foreach($Reader as $key => $row)
+            {
+                if($key == 0) continue;
+                $deskripsi = $row[0];
+                $kategori  = $row[1];
+                $jawaban_1 = $row[2];
+                $jawaban_2 = $row[3];
+                $jawaban_3 = $row[4];
+                $jawaban_4 = $row[5];
+
+                $excerpt  = strWordCut($deskripsi,100);
+                $question = new Soal;
+                $question_id = $question->save([
+                    'post_author_id' => session()->get('id'),
+                    'post_title'     => 'Post Soal',
+                    'post_content'   => $deskripsi,
+                    'post_excerpt'   => $excerpt,
+                    'post_status'    => 1,
+                    'post_as'        => 'Pilihan Berganda',
+                    'post_date'      => 'CURRENT_TIMESTAMP',
+                    'post_modified'  => 'CURRENT_TIMESTAMP',
+
+                ]);
+
+                for($i=1;$i<=4;$i++)
+                {
+                    $jwb_excerpt = strWordCut(${'jawaban_'.$i},100);
+                    $answer = new Jawaban;
+                    $answer->save([
+                        'post_author_id' => session()->get('id'),
+                        'post_title'     => ${'jawaban_'.$i},
+                        'post_content'   => '<p>'.${'jawaban_'.$i}.'</p>',
+                        'post_excerpt'   => ${'jawaban_'.$i},
+                        'post_parent_id' => $question_id,
+                        'post_status'    => 1,
+                        'post_as'        => $i == 1 ? 1 : 0,
+                        'post_date'      => 'CURRENT_TIMESTAMP',
+                        'post_modified'  => 'CURRENT_TIMESTAMP',
+                    ]);
+                }
+
+                $category = Category::where('category_name',$kategori)->first();
+                if(!$category) continue;
+
+                $cat = new CategoryPost;
+                $cat->save([
+                    'category_id' => $category->id,
+                    'post_id' => $question_id,
+                ]);
+            }
+            return ['status'=>true];
+        // }
+        // return ['status'=>false];
     }
 }

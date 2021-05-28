@@ -39,4 +39,14 @@ class Customer extends Model
     {
         return $this->hasOne(CustomerLogo::class,['customer_id'=>'id']);
     }
+
+    function subscriptions()
+    {
+        return $this->hasMany(Subscription::class,['customer_id'=>'id']);
+    }
+
+    function subscription_active()
+    {
+        return Subscription::where('customer_id',$this->id)->where('status',1)->first();
+    }
 }

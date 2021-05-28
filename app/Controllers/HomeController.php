@@ -3,12 +3,24 @@ namespace App\Controllers;
 use User;
 use Page;
 use Category;
+use CategoryUser;
 use App\Models\{Soal,Kuis,Participant,CustomerLogo};
 
 class HomeController
 {
 
     function index()
+    {
+        return [
+            'soal' => 0, 
+            'kuis' => 0,
+            'peserta' => 0,
+            'kategori' => 0,
+            'total' => 0
+        ];
+    }
+
+    function statistic()
     {
         if(session()->user()->user_level == 'master')
         {
@@ -33,7 +45,7 @@ class HomeController
             $soal = Soal::where('post_author_id',$user->id)->count();
             $kuis = Kuis::where('post_author_id',$user->id)->count();
             $peserta = count($customer->participants());
-            $kategori = Category::count();
+            $kategori = CategoryUser::where('user_id',$user->id)->count();
             $total = $soal+$kuis+$peserta+$kategori;
             return [
                 'soal' => $soal, 
@@ -43,13 +55,8 @@ class HomeController
                 'total' => $total
             ];
         }
-        return [
-            'soal' => 0, 
-            'kuis' => 0,
-            'peserta' => 0,
-            'kategori' => 0,
-            'total' => 0
-        ];
+
+        return [];
     }
 
     function setting()
@@ -86,9 +93,9 @@ class HomeController
                 move_uploaded_file($file, 'uploads/' . $new_image_name);
                 $file_url = base_url().'/uploads/' . $new_image_name;
                 
-                $user    = session()->user();
-                $user->customer();
-                $logo    = CustomerLogo::where('customer_id',$user->customer->id)->first();
+                $user     = session()->user();
+                $customer = session()->user()->customer();
+                $logo     = CustomerLogo::where('customer_id',$customer->id)->first();
                 if($logo)
                 {
                     $logo->save([
@@ -100,7 +107,7 @@ class HomeController
 
                     $logo    = new CustomerLogo;
                     $logo->save([
-                        'customer_id' => $user->customer->id,
+                        'customer_id' => $customer->id,
                         'file_url'    => $file_url
                     ]);
                 }
@@ -158,6 +165,17 @@ class HomeController
     {
         $page = Page::get();
         print_r($page);
+    }
+
+    function changePassword()
+    {
+        $request = request()->post();
+        $user = session()->user();
+        $user->save([
+            'user_pass' => md5($request->user_pass)
+        ]);
+
+        return ['status' => 1];
     }
 
 }

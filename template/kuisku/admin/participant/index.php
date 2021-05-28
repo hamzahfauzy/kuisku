@@ -34,12 +34,46 @@ $this->js = [
                     </div>
                 </div>
                 <table class="table table-bordered table-striped table-peserta">
+                    <thead>
+                        <tr>
+                            <td>#</td>
+                            <td>Peserta</td>
+                            <td>Email</td>
+                            <td>No. Handphone</td>
+                            <td>Aksi</td>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <td colspan="3"><i>Tidak ada data!</i></td>
+                            <td colspan="5"><i>Tidak ada data!</i></td>
                         </tr>
                     </tbody>
                 </table>
+                <p>Total Jumlah Peserta : <?= $count_of_participant ?></p>
+                <ul class="pagination"> 
+                    <!-- Declare the item in the group -->
+                    <li class="page-item"> 
+                        <!-- Declare the link of the item -->
+                        <a class="page-link" href="<?= base_url() ?>/admin/participant?page=<?=isset($_GET['page']) && $_GET['page'] > 1 ? $_GET['page']-1 : 1?>">Previous</a> 
+                    </li>
+
+                    <?php 
+                    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+                    $jumlah_number = 3; // Tentukan jumlah link number sebelum dan sesudah page yang aktif
+                    $start_number = ($page > $jumlah_number) ? $page - $jumlah_number : 1; // Untuk awal link number
+                    $end_number = ($page < ($num_of_page - $jumlah_number))? $page + $jumlah_number : $num_of_page; //
+                    for($i=$start_number;$i<=$end_number;$i++): 
+                        $link_active = ($page == $i)? 'pagination-active' : '';
+                    ?>
+                    <!-- Rest of the pagination items -->
+                    <li class="page-item"> 
+                        <a class="page-link <?= $link_active ?>" href="<?= base_url() ?>/admin/participant?page=<?=$i?>"><?= $i ?></a> 
+                    </li> 
+                    <?php endfor ?>
+                    <li class="page-item"> 
+                        <a class="page-link" href="<?= base_url() ?>/admin/participant?page=<?= isset($_GET['page']) && $_GET['page'] == $num_of_page ? $num_of_page : $_GET['page']+1?>">Next</a> 
+                    </li> 
+                </ul> 
             </div>
         </div>
     </div>
@@ -78,6 +112,10 @@ $this->js = [
                         </button>
                     </div>
                 </div>
+            </div>
+            <div class="form-group">
+                <label for="no_hp">No. Handphone</label>
+                <input type="tel" name="no_hp" id="no_hp" class="form-control" required>
             </div>
         </form>
       </div>
@@ -124,6 +162,10 @@ $this->js = [
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <label for="no_hp">No. Handphone</label>
+                <input type="tel" name="no_hp" id="no_hp" class="form-control" required>
+            </div>
         </form>
       </div>
       <div class="modal-footer">
@@ -151,9 +193,21 @@ function showPassword(el)
     el.attr('type',changeType);
 }
 
-async function loadData()
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+async function loadData(page = 1)
 {
-    let request = await fetch('<?= route('admin/participant/get') ?>')
+    page = getParameterByName('page') ? getParameterByName('page') : page
+    $('.table-peserta > tbody').html('<tr><td colspan="5"><i>Loading...</i></td></tr>')
+    let request = await fetch('<?= route('admin/participant/get') ?>?page='+page)
     let response = await request.json()
     dataPeserta = response
     fetchToTable()
@@ -165,6 +219,7 @@ async function simpanPeserta()
         user_name:$('#addParticipantForm').find('#name').val(),
         user_email:$('#addParticipantForm').find('#email').val(),
         user_pass:$('#addParticipantForm').find('#password').val(),
+        no_hp:$('#addParticipantForm').find('#no_hp').val(),
     }
 
     let request = await fetch('<?= route('admin/participant/insert') ?>',{
@@ -211,6 +266,7 @@ async function fetchEditPeserta(id)
     $('#editParticipantForm').find('#id').val(response.id)
     $('#editParticipantForm').find('#name').val(response.user_name)
     $('#editParticipantForm').find('#email').val(response.user_email)
+    $('#editParticipantForm').find('#no_hp').val(response.no_hp)
 }
 
 async function editPeserta()
@@ -220,6 +276,7 @@ async function editPeserta()
         user_name:$('#editParticipantForm').find('#name').val(),
         user_email:$('#editParticipantForm').find('#email').val(),
         user_pass:$('#editParticipantForm').find('#password').val(),
+        no_hp:$('#editParticipantForm').find('#no_hp').val(),
     }
 
     let request = await fetch('<?= route('admin/participant/update') ?>',{
@@ -259,23 +316,81 @@ function fetchToTable(data = false)
 {
     if(!data)
         data = dataPeserta
-    $('.table-peserta > tbody').html('')
+    $('.table-peserta > tbody').html('<tr><td colspan="5"><i>Loading...</i></td></tr>')
     if(data.length == 0)
     {
-        $('.table-peserta > tbody').html('<tr><td colspan="2"><i>Tidak ada data!</i></td></tr>')
+        $('.table-peserta > tbody').html('<tr><td colspan="5"><i>Tidak ada data!</i></td></tr>')
+    }
+    else
+    {
+        $('.table-peserta > tbody').html('')
     }
 
+    var no = 1
     data.forEach(val => {
         $('.table-peserta > tbody').append(`<tr>
+            <td>${no++}</td>
             <td>
                 <b>${val.user_name}</b>
-                <br>
+            </td>
+            <td>
                 ${val.user_email}
-                <br>
+            </td>
+            <td>
+                ${val.no_hp}
+            </td>
+            <td>
+                <a href="javascript:void(0)" onclick="kirimNotifikasi(${val.id},this)" class="act-btn jawab-btn"><i class="fa fa-send"></i> Kirim Notifikasi</a> |
                 <a href="javascript:void(0)" onclick="fetchEditPeserta(${val.id})" class="act-btn edit-btn" data-toggle="modal" data-target="#modalEdit"><i class="fa fa-pencil"></i> Edit</a> |
                 <a href="javascript:void(0)" onclick="deletePeserta(${val.id})" class="act-btn delete-btn"><i class="fa fa-trash"></i> Hapus</a>
             </td>
         </tr>`)
+    })
+}
+
+async function kirimNotifikasi(user_id, el)
+{
+    Swal.fire({
+        title: 'Konfirmasi ?',
+        text: "Apakah anda yakin akan mengirim notifikasi kepada peserta ?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya'
+    }).then(async (result) => {
+        if (result.value) {
+            el.innerHTML = "Loading..."
+            el.removeAttribute("onclick")
+            let request = await fetch('<?= route('admin/participant/notifikasi-peserta') ?>',{
+                method :'POST',
+                headers : {
+                    'Content-Type':'application/json'
+                },
+                body   : JSON.stringify({user_id:user_id}),
+            })
+            let response = await request.json()
+
+            if(response.status == false)
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Notifikasi gagal terkirim!',
+                    footer: '<a href="javascript:void(0)">Terdapat kesalahan pada saat pengiriman sms</a>'
+                })
+            }
+            else
+            {
+                Swal.fire(
+                    'Success!',
+                    'Notifikasi Berhasil di kirim.',
+                    'success'
+                )
+
+                loadData()
+            }
+        }
     })
 }
 
@@ -287,6 +402,7 @@ async function fetchEditPeserta(id)
     $('#editParticipantForm').find('#id').val(response.id)
     $('#editParticipantForm').find('#name').val(response.user_name)
     $('#editParticipantForm').find('#email').val(response.user_email)
+    $('#editParticipantForm').find('#no_hp').val(response.no_hp)
 }
 
 async function deletePeserta(id)
@@ -343,5 +459,7 @@ function filterPeserta(keyword)
     fetchToTable(data)
 }
 
-loadData()
+window.onload = function(){
+    loadData()
+}
 </script>

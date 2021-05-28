@@ -8,6 +8,16 @@ return [
         'return'   => 'page:index'
     ],
 
+    'statistic' => [
+        'callback' => 'HomeController@statistic',
+        'return'   => 'json'
+    ],
+
+    'change-password' => [
+        'callback' => 'HomeController@changePassword',
+        'return'   => 'json'
+    ],
+
     'master' => [
         'middleware' => 'Master',
         'callback' => 'HomeController@index',
@@ -170,6 +180,30 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/category/insert' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@insert',
+        'return'   => 'json'
+    ],
+
+    'admin/category/update' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@update',
+        'return'   => 'json'
+    ],
+
+    'admin/category/find/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@find',
+        'return'   => 'json'
+    ],
+
+    'admin/category/delete' => [
+        'middleware' => 'Admin',
+        'callback' => 'CategoryController@delete',
+        'return'   => 'json'
+    ],
+
     'admin/question' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@index',
@@ -196,7 +230,7 @@ return [
 
     'admin/question/get' => [
         'middleware' => 'Admin',
-        'callback' => 'SoalController@index',
+        'callback' => 'SoalController@get',
         'return'   => 'json'
     ],
 
@@ -206,9 +240,21 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/question/import' => [
+        'middleware' => 'Admin',
+        'callback' => 'SoalController@importSoal',
+        'return'   => 'json'
+    ],
+
     'admin/question/answer/insert' => [
         'middleware' => 'Admin',
         'callback' => 'SoalController@insertAnswer',
+        'return'   => 'json'
+    ],
+
+    'admin/question/answer/find/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'SoalController@getAnswer',
         'return'   => 'json'
     ],
 
@@ -266,15 +312,15 @@ return [
         'return'     => 'json'
     ],
 
-    'admin/participant/import' => [
+    'admin/participant/notifikasi-peserta' => [
         'middleware' => 'Admin',
-        'callback'   => 'ParticipantController@import',
+        'callback'   => 'ParticipantController@notifikasiPeserta',
         'return'     => 'json'
     ],
 
     'admin/participant/get' => [
         'middleware' => 'Admin',
-        'callback' => 'ParticipantController@index',
+        'callback' => 'ParticipantController@get',
         'return'   => 'json'
     ],
 
@@ -311,6 +357,30 @@ return [
     'admin/kuis/get' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@index',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/get-participant/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@getParticipant',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/notifikasi-peserta' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@notificationParticipant',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/save-category' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@saveCategory',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/category/{id}' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@getCategory',
         'return'   => 'json'
     ],
 
@@ -374,6 +444,12 @@ return [
         'return'   => 'json'
     ],
 
+    'admin/kuis/import-participant' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@importParticipant',
+        'return'   => 'json'
+    ],
+
     'admin/kuis/view/{id}/scoreboard' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@scoreboard',
@@ -395,6 +471,12 @@ return [
     'admin/kuis/sesi/batal-peserta' => [
         'middleware' => 'Admin',
         'callback' => 'KuisController@sesiBatalPeserta',
+        'return'   => 'json'
+    ],
+
+    'admin/kuis/sesi/notifikasi-peserta' => [
+        'middleware' => 'Admin',
+        'callback' => 'KuisController@sesiNotifikasiPeserta',
         'return'   => 'json'
     ],
 
@@ -426,6 +508,12 @@ return [
         'middleware' => 'Participant',
         'callback'   => 'Participant\IndexController@index',
         'return'     => 'partial:participant.index'
+    ],
+
+    'participant/load-navigation' => [
+        'middleware' => 'Participant',
+        'callback'   => 'Participant\IndexController@loadNavigation',
+        'return'     => 'json'
     ],
 
     'participant/exam/answer' => [

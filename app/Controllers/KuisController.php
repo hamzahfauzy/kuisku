@@ -177,14 +177,11 @@ class KuisController
     function sesiJadiPeserta()
     {
         $request = request()->post();
-<<<<<<< HEAD
-=======
         $sesi = Sesi::find($request->sesi_id);
         $kuis = Kuis::find($sesi->post_parent_id);
 
         if(count($sesi->peserta()) == $kuis->meta('max_participant'))
             return ['status' => false];
->>>>>>> 1397659fca40604dfeade65fac55b5a4ccabce3d
 
         $sesiUser = new SesiUser;
         $sesiUserId = $sesiUser->save([
